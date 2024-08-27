@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+# importing dj_database_url for deployment purposes
+import dj_database_url
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -111,7 +115,7 @@ MIDDLEWARE = [
 
 # To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
 CSRF_TRUSTED_ORIGINS = [
-    # 'https://job-portal-system-backend.onrender.com',
+    'https://hrcorp-system.onrender.com',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
@@ -159,17 +163,28 @@ WSGI_APPLICATION = 'HRCorp.wsgi.application'
 # }
 
 
-# PostgreSQL Database credentials accessed from .env file
+# # Local PostgreSQL Database credentials accessed from .env file
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env("DB_NAME"),
+#         'USER': env("DB_USER"),
+#         'PASSWORD': env("DB_PASSWORD"),
+#         'HOST': env("DB_HOST"),
+#         'PORT': env("DB_PORT"),
+#     }
+# }
+
+
+# Database configuration for PostgreSQL with on-render development server
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
-    }
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgresql://hrcorp_database_user:YU4HDkKRZxgYmJdcD0BuhLloJ5dQVsKJ@dpg-cr74ap2j1k6c73f2tm8g-a.oregon-postgres.render.com/hrcorp_database',
+        conn_max_age=600
+    )
 }
+
 
 
 
