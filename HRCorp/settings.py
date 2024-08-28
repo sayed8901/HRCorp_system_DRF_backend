@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 
 # importing dj_database_url for deployment purposes
+# if live postgreSQL is used (see option 3 for database)
 import dj_database_url
 
 
@@ -150,19 +151,24 @@ SITE_ID = 1
 WSGI_APPLICATION = 'HRCorp.wsgi.application'
 
 
+
+
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# # default sqlite3 database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# 1st option for database
+# default sqlite3 database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
+# 2nd option for database
 # # Local PostgreSQL Database credentials accessed from .env file
 # DATABASES = {
 #     'default': {
@@ -176,14 +182,16 @@ WSGI_APPLICATION = 'HRCorp.wsgi.application'
 # }
 
 
-# Database configuration for PostgreSQL with on-render development server
-DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://hrcorp_database_user:YU4HDkKRZxgYmJdcD0BuhLloJ5dQVsKJ@dpg-cr74ap2j1k6c73f2tm8g-a.oregon-postgres.render.com/hrcorp_database',
-        conn_max_age=600
-    )
-}
+# # 3rd option for database
+# # Database configuration for PostgreSQL with on-render development server
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgresql://hrcorp_database_user:YU4HDkKRZxgYmJdcD0BuhLloJ5dQVsKJ@dpg-cr74ap2j1k6c73f2tm8g-a.oregon-postgres.render.com/hrcorp_database',
+#         conn_max_age=600
+#     )
+# }
+
 
 
 
