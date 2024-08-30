@@ -4,6 +4,6 @@ from .models import JobProfileHistory
 class JobProfileHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = JobProfileHistory
-        exclude = ['employee', ]
+        fields = '__all__'
 
         read_only_fields = ['employee', ]

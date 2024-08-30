@@ -11,7 +11,7 @@ from HRCorp.permissions import IsPowerOrStandardUserOtherwiseReadOnly
 
 
 # Create your views here.
-class JobProfileHistoryDetail(APIView):
+class SingleEmployeeJobProfileHistory(APIView):
     permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
     
     def get(self, request, format = None):
@@ -27,3 +27,16 @@ class JobProfileHistoryDetail(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+
+class AllEmployeeJobProfileHistoryList(APIView):
+    permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
+
+    def get(self, request, format=None):
+        # Fetch all job profile history entries
+        job_profile_history_info = JobProfileHistory.objects.all()
+
+        serializer = JobProfileHistorySerializer(job_profile_history_info, many=True)
+        print('job profile history:', serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

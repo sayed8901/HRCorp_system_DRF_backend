@@ -1,9 +1,10 @@
 from django.urls import path, include
 
-from .views import JobProfileHistoryDetail
+from .views import SingleEmployeeJobProfileHistory, AllEmployeeJobProfileHistoryList
 
 
 urlpatterns = [
-    path('history/', JobProfileHistoryDetail.as_view(), name='job_profile_history'),
+    path('', SingleEmployeeJobProfileHistory.as_view(), name='job_profile_history'),
+    path('list/', AllEmployeeJobProfileHistoryList.as_view(), name='job_profile_history'),
 ]
 

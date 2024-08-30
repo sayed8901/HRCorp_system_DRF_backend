@@ -20,7 +20,7 @@ urlpatterns = [
     path('promotion/', include('promotion.urls')),
     path('separation/', include('separation.urls')),
 
-    path('job_profile/', include('job_profile.urls')),
+    path('job_profile_history/', include('job_profile.urls')),
     
     # to implement authentication facility only in DRF panel
     path("api-auth/", include("rest_framework.urls")),
