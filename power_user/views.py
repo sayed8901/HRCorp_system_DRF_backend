@@ -61,10 +61,10 @@ class PowerUserRegistrationAPIView(APIView):
             print('user_id :', user_id)
 
             # creating a confirm link (using local domain)
-            # confirm_link = f'http://127.0.0.1:8000/power_user/active/{user_id}/{token}/'
+            confirm_link = f'http://127.0.0.1:8000/power_user/active/{user_id}/{token}/'
             
             # creating a confirm link (using live DRF domain)
-            confirm_link = f'https://hrcorp-system.onrender.com/power_user/active/{user_id}/{token}/'
+            # confirm_link = f'https://hrcorp-system.onrender.com/power_user/active/{user_id}/{token}/'
             
 
 

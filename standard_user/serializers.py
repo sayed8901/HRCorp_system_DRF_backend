@@ -40,12 +40,14 @@ class StandardUserSerializer(serializers.ModelSerializer):
 class StandardUserRegistrationSerializer(serializers.ModelSerializer):
     contact_no = serializers.CharField(max_length=11)
 
+    supervisor = serializers.PrimaryKeyRelatedField(queryset = PowerUser.objects.all(), write_only = True)
+
     # The SlugRelatedField will allow to look up the supervisor by their username.
-    supervisor = serializers.SlugRelatedField(
-        slug_field='user__username',
-        queryset=PowerUser.objects.all(),
-        write_only=True
-    )
+    # supervisor = serializers.SlugRelatedField(
+    #     slug_field='user__username',
+    #     queryset=PowerUser.objects.all(),
+    #     write_only=True
+    # )
 
     confirm_password = serializers.CharField(max_length=20, required=True)
 
