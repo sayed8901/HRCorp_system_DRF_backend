@@ -6,6 +6,7 @@ class PersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PersonalInfo
         fields = '__all__'
+        # exclude = ['employee',]
 
         read_only_fields = ['employee', ]
 
@@ -20,6 +21,7 @@ class EmploymentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmploymentInfo
         fields = '__all__'
+        # exclude = ['employee',]
 
         read_only_fields = ['employee', ]
 

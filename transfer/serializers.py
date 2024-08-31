@@ -28,6 +28,7 @@ class TransferInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransferInfo
         fields = '__all__'
+        # exclude = ['employee',]
 
         read_only_fields = ['employee', ]
 

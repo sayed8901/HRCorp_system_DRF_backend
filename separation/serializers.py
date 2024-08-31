@@ -5,5 +5,6 @@ class SeparationInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SeparationInfo
         fields = '__all__'
+        # exclude = ['employee',]
 
         read_only_fields = ['employee', ]
