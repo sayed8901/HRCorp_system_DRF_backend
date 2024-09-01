@@ -20,7 +20,21 @@ class EmploymentInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmploymentInfo
-        fields = '__all__'
+
+        fields = [
+            'employee', 
+            'status', 
+            'job_location', 
+            'department', 
+            'designation', 
+            'joining_date', 
+            'probation_period_months', 
+            'tentative_confirmation_date',
+            'confirmation_effective_date', 
+            'is_confirmed',
+        ]
+
+        # fields = '__all__'
         # exclude = ['employee',]
 
         read_only_fields = ['employee', ]
