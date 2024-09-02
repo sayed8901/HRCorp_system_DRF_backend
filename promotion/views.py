@@ -31,10 +31,35 @@ class AllPromotionInfoDetailView(APIView):
 
     
 
-class PromotionInfoCreateView(generics.CreateAPIView):
+class PromotionInfoCreateView(APIView):
     serializer_class = PromotionInfoSerializer
 
     permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
+
+
+    # To get all the promotion information of an employee
+    def get(self, request, format = None):
+        employee_id = request.query_params.get('employee_id')
+
+        if not employee_id:
+            return Response({'error': 'employee_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Fetch the employee instance from the employee_id
+        try:
+            employee = Employee.objects.get(employee_id = employee_id)
+            print(employee)
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employee not found, may be incorrect employee ID given'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+        promotion_info_queryset = PromotionInfo.objects.filter(employee = employee_id)
+        
+        serializer = PromotionInfoSerializer(promotion_info_queryset, many=True)
+        print('promotion info:', serializer.data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 
 
     def post(self, request, format=None):

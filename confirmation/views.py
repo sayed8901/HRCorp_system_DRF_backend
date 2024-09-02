@@ -35,7 +35,7 @@ class AllConfirmationInfoDetailView(APIView):
 
 
 
-class ConfirmationInfoCreateView(generics.CreateAPIView):
+class ConfirmationInfoCreateView(APIView):
     serializer_class = ConfirmationInfoSerializer
 
     permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
@@ -139,3 +139,6 @@ class ConfirmationInfoCreateView(generics.CreateAPIView):
 
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+

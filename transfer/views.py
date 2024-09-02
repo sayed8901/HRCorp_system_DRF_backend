@@ -16,8 +16,8 @@ from power_user.permissions import IsPowerUserOrReadOnly
 
 # Create your views here.
 class AllTransferInfoDetailView(APIView):
-    permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
     serializer_class = TransferInfoSerializer
+    permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
     
     # both the standard_user and power_user can GET all the transfer info
     def get(self, request, format = None):
@@ -32,9 +32,13 @@ class AllTransferInfoDetailView(APIView):
 
 # both the standard_user and power_user can GET or POST a transfer info
 class IndividualEmployeeTransferInfoView(APIView):
+    serializer_class = TransferInfoSerializer
+
     permission_classes = [IsPowerOrStandardUserOtherwiseReadOnly]
+
+
     
-    # To update transfer information
+    # To get all the transfer information of an employee
     def get(self, request, format = None):
         employee_id = request.query_params.get('employee_id')
 
@@ -58,7 +62,7 @@ class IndividualEmployeeTransferInfoView(APIView):
     
 
     
-    # To update transfer information
+    # To post transfer information
     def post(self, request, format = None):
         employee_id = request.query_params.get('employee_id')
 
