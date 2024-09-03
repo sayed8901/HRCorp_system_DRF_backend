@@ -45,7 +45,8 @@ class EmploymentInfoSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['id', 'name', ]
 
 
 
@@ -53,7 +54,8 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class DesignationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Designation
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['id', 'name', ]
 
 
 
@@ -61,5 +63,7 @@ class DesignationSerializer(serializers.ModelSerializer):
 class JobLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobLocation
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['id', 'name', ]
+
 

@@ -37,6 +37,12 @@ class Department(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
 
+    # to add automatically slug values after a Department model created or its name updated
+    def save(self, *args, **kwargs):
+        if not self.slug or self.name != Department.objects.get(pk=self.pk).name:
+            self.slug = slugify(self.name)
+        super(Department, self).save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.name}'
 
@@ -45,6 +51,12 @@ class Department(models.Model):
 class Designation(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
+
+    # to add automatically slug values after a Designation model created or its name updated
+    def save(self, *args, **kwargs):
+        if not self.slug or self.name != Designation.objects.get(pk=self.pk).name:
+            self.slug = slugify(self.name)
+        super(Designation, self).save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.name}'
@@ -55,9 +67,14 @@ class JobLocation(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
 
+    # to add automatically slug values after a JobLocation model created or its name updated
+    def save(self, *args, **kwargs):
+        if not self.slug or self.name != JobLocation.objects.get(pk=self.pk).name:
+            self.slug = slugify(self.name)
+        super(JobLocation, self).save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.name}'
-
 
 
 
@@ -83,7 +100,5 @@ class EmploymentInfo(models.Model):
 
     def __str__(self):
         return f'employment info for id: {self.employee.employee_id}, status: {self.status})'
-
-
 
 
