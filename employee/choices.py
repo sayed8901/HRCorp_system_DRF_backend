@@ -16,8 +16,15 @@ STATUS_CHOICES = [
 ]
 
 LEAVE_TYPE_CHOICES = [
-    ('Casual', 'Casual'),
     ('Sick', 'Sick'),
+    ('Casual', 'Casual'),
+    ('NPL', 'Non-Paid Leave'),
+]
+
+LEAVE_APPROVED_CHOICES = [
+    ('Approved', 'Approved'), 
+    ('Pending', 'Pending'), 
+    ('Rejected', 'Rejected')
 ]
 
 

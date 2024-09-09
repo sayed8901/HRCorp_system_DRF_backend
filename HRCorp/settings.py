@@ -72,6 +72,9 @@ INSTALLED_APPS = [
 
     'job_profile',
 
+    'leave',
+    'payroll',
+
     # 3rd party libraries
     'rest_framework',
     'rest_framework.authtoken',

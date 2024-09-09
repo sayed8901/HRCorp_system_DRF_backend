@@ -48,7 +48,7 @@ class IndividualEmployeeTransferInfoView(APIView):
         # Fetch the employee instance from the employee_id
         try:
             employee = Employee.objects.get(employee_id = employee_id)
-            print(employee)
+            # print(employee)
         except Employee.DoesNotExist:
             return Response({'error': 'Employee not found, may be incorrect employee ID given'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -56,7 +56,7 @@ class IndividualEmployeeTransferInfoView(APIView):
         transfer_info_queryset = TransferInfo.objects.filter(employee = employee_id)
         
         serializer = TransferInfoSerializer(transfer_info_queryset, many=True)
-        print('transfer info:', serializer.data)
+        # print('transfer info:', serializer.data)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -268,6 +268,5 @@ class WithdrawSingleTransferInfoView(APIView):
 
 
         return Response({'message': 'Transfer information deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-
 
 

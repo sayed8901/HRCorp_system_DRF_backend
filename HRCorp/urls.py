@@ -21,6 +21,9 @@ urlpatterns = [
     path('separation/', include('separation.urls')),
 
     path('job_profile_history/', include('job_profile.urls')),
+
+    path('leave/', include('leave.urls')),
+    path('payroll/', include('payroll.urls')),
     
     # to implement authentication facility only in DRF panel
     path("api-auth/", include("rest_framework.urls")),

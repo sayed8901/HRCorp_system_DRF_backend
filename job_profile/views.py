@@ -23,7 +23,7 @@ class SingleEmployeeJobProfileHistory(APIView):
         job_profile_history_info = JobProfileHistory.objects.filter(employee = employee_id)
         
         serializer = JobProfileHistorySerializer(job_profile_history_info, many=True)
-        print('job profile history:', serializer.data)
+        # print('job profile history:', serializer.data)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -37,6 +37,6 @@ class AllEmployeeJobProfileHistoryList(APIView):
         job_profile_history_info = JobProfileHistory.objects.all()
 
         serializer = JobProfileHistorySerializer(job_profile_history_info, many=True)
-        print('job profile history:', serializer.data)
+        # print('job profile history:', serializer.data)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
