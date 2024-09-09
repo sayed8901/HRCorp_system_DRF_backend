@@ -13,7 +13,7 @@ class SalaryInfoSerializer(serializers.ModelSerializer):
             'effective_basic',
             'festival_bonus',
             'other_allowance',
-            'salary_deduction_npl',
+            'npl_salary_deduction',
             'house_rent',
             'medical_allowance',
             'conveyance',
