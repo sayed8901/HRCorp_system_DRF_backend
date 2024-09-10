@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 from .models import Payroll
 from salary.models import SalaryInfo
+from leave.models import Leave
 from employee.models import Employee
 from employment.models import EmploymentInfo
 from .serializers import PayrollSerializer
@@ -54,69 +55,66 @@ class PayrollListCreateAPIView(APIView):
 
         # Filter active employees based on EmploymentInfo status
         active_employees = Employee.objects.filter(
-            employmentinfo__status='Active'
+            employmentinfo__status = 'Active'
         ).select_related('employmentinfo')
 
 
         for employee in active_employees:
             try:
-                salary_info = SalaryInfo.objects.get(employee=employee)
+                salary_info = SalaryInfo.objects.get(employee = employee)
+                leave_info = Leave.objects.filter(employee = employee)
 
-                employment_info = EmploymentInfo.objects.get(employee=employee)
+                employment_info = EmploymentInfo.objects.get(employee = employee)
                 
 
                 # updating leave balance status
-                salary_info.update_leave_balances()
+                leave_info.update_leave_balances()
                 
 
                 # Creating payroll info for each employee
                 Payroll.objects.create(
-                    employee=employee,
-                    month=month_date,
+                    employee = employee,
+                    status = employment_info.status, # Active status get from employment_info.status
+                    month = month_date,
 
+                    salary_grade = salary_info.salary_grade,
+                    salary_step = salary_info.salary_step,
 
-                    salary_grade=salary_info.salary_grade,
-                    salary_step=salary_info.salary_step,
+                    starting_basic = salary_info.starting_basic,
+                    effective_basic = salary_info.effective_basic,
 
-                    starting_basic=salary_info.starting_basic,
-                    effective_basic=salary_info.effective_basic,
+                    festival_bonus = salary_info.festival_bonus or 0,
+                    other_allowance = salary_info.other_allowance or 0,
 
-                    festival_bonus=salary_info.festival_bonus or 0,
-                    other_allowance=salary_info.other_allowance or 0,
+                    house_rent = salary_info.house_rent,
+                    medical_allowance = salary_info.medical_allowance,
+                    conveyance = salary_info.conveyance,
+                    hardship = salary_info.hardship,
+                    pf_contribution = salary_info.pf_contribution,
 
-                    house_rent=salary_info.house_rent,
-                    medical_allowance=salary_info.medical_allowance,
-                    conveyance=salary_info.conveyance,
-                    hardship=salary_info.hardship,
-                    pf_contribution=salary_info.pf_contribution,
+                    pf_deduction = salary_info.pf_deduction,
+                    swf_deduction = salary_info.swf_deduction,
+                    tax_deduction = salary_info.tax_deduction,
 
-                    pf_deduction=salary_info.pf_deduction,
-                    swf_deduction=salary_info.swf_deduction,
-                    tax_deduction=salary_info.tax_deduction,
+                    gross_salary = salary_info.gross_salary,
 
-                    consolidated_salary=salary_info.consolidated_salary,
-                    
-                    is_confirmed=salary_info.is_confirmed,
+                    npl_salary_deduction = salary_info.npl_salary_deduction, # Deduct NPL salary
 
-                    status = employment_info.status,
+                    net_salary = salary_info.net_salary,
 
-
-                    gross_salary=salary_info.gross_salary,
-                    net_salary=salary_info.net_salary,
-                    
-                    npl_deduction=salary_info.calculate_npl_deduction(),
+                    consolidated_salary = salary_info.consolidated_salary,
+                    is_confirmed = salary_info.is_confirmed,
                 )
 
-            except SalaryInfo.DoesNotExist:
-                # Log or handle the case where salary info is missing
-                pass
+            except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
+                return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
 
                     
         # Query payroll records for the specified month
-        new_payroll_queryset = Payroll.objects.filter(month=month_date)
+        new_payroll_queryset = Payroll.objects.filter(month = month_date)
         serializer = PayrollSerializer(new_payroll_queryset, many=True)
-        return Response(serializer.data)
 
+        return Response(serializer.data)
 
 
 
@@ -170,5 +168,4 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
         
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-
 

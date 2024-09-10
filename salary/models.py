@@ -7,6 +7,9 @@ from employee.choices import *
 from django.core.exceptions import ValidationError
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.utils import timezone
+from datetime import datetime
+
 
 
 
@@ -26,7 +29,7 @@ class SalaryInfo(models.Model):
     casual_leave_balance = models.PositiveIntegerField(default=10)
     sick_leave_balance = models.PositiveIntegerField(default=14)
 
-    npl_salary_deduction = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
 
 
 
@@ -156,31 +159,62 @@ class SalaryInfo(models.Model):
             return self.consolidated_salary
 
 
-    # method to update the leave balance status
-    def update_leave_balances(self):
-        # Fetch leave records and update balances accordingly
-        leave_records = Leave.objects.filter(employee=self.employee, status='Approved')
-
-        for record in leave_records:
-            if record.leave_type == 'Casual':
-                self.casual_leave_balance -= record.days_taken
-            elif record.leave_type == 'Sick':
-                self.sick_leave_balance -= record.days_taken
 
 
-    def calculate_npl_deduction(self):
-        if self.casual_leave_balance < 0:
-            npl_days = abs(self.casual_leave_balance)
-            npl_deduction = (self.effective_basic / 30) * npl_days  # Assuming 30 days in a month
+
+    @property
+    def npl_salary_deduction(self):
+        now = timezone.now()
+
+        # Get the start and end date of the current month
+        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_of_month = (start_of_month + timezone.timedelta(days=31)).replace(day=1) - timezone.timedelta(seconds=1)
+
+
+        # Filter Non_Paid_Leave entries for the current month
+        npl_leaves = Leave.objects.filter(
+            employee = self.employee,
+            leave_type = 'Non_Paid_Leave',
+            leave_start_date__lte = end_of_month,
+            leave_end_date__gte = start_of_month,
+        )
+
+
+        # Calculate the total number of NPL days in the current month
+        total_npl_days = 0
+
+        for leave in npl_leaves:
+            # Ensure leave_start_date and leave_end_date are datetime objects
+            if not isinstance(leave.leave_start_date, datetime):
+                leave.leave_start_date = timezone.make_aware(datetime.combine(leave.leave_start_date, datetime.min.time()))
+                
+            if not isinstance(leave.leave_end_date, datetime):
+                leave.leave_end_date = timezone.make_aware(datetime.combine(leave.leave_end_date, datetime.min.time()))
+
+
+            leave_start = max(leave.leave_start_date, start_of_month)
+            leave_end = min(leave.leave_end_date, end_of_month)
+
+            # Calculate the total number of NPL days
+            if leave_start <= leave_end:
+                total_npl_days += (leave_end - leave_start).days + 1
+
+
+        # Calculate the deduction
+        if total_npl_days > 0:
+            npl_deduction = (self.effective_basic / 30) * total_npl_days  # Assuming 30 days in a month
+
             return Decimal(npl_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+
         return Decimal('0.00')
+
+
 
 
 
     @property
     def net_salary(self):
-        npl_salary_deduction = self.calculate_npl_deduction()
-
         if self.is_confirmed:
             # Regular net salary for confirmed staff
             result = (
@@ -188,9 +222,8 @@ class SalaryInfo(models.Model):
                 (
                     self.pf_deduction +
                     self.swf_deduction +
-                    (self.npl_salary_deduction or Decimal('0.00')) +
-                    self.tax_deduction
-                    + npl_salary_deduction
+                    self.tax_deduction +
+                    self.npl_salary_deduction
                 )
             )
             # for 2 digit decimal precision
@@ -199,6 +232,8 @@ class SalaryInfo(models.Model):
             # For non-confirmed staff, net salary is the consolidated salary
             return self.consolidated_salary
         
+
+
 
 
     # Consolidated salary (150% of effective basic)
@@ -210,6 +245,7 @@ class SalaryInfo(models.Model):
             # for 2 digit decimal precision
             return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         return Decimal('0.00')
+
 
 
 
@@ -233,7 +269,6 @@ class SalaryInfo(models.Model):
             
         except EmploymentInfo.DoesNotExist:
             return f"{self.employee.employee_id} - No Employment Info"
-
 
 
 
