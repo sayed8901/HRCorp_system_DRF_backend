@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 
 from .models import Payroll
 from salary.models import SalaryInfo
-from leave.models import Leave
 from employee.models import Employee
 from employment.models import EmploymentInfo
 from .serializers import PayrollSerializer
@@ -62,13 +61,8 @@ class PayrollListCreateAPIView(APIView):
         for employee in active_employees:
             try:
                 salary_info = SalaryInfo.objects.get(employee = employee)
-                leave_info = Leave.objects.filter(employee = employee)
 
                 employment_info = EmploymentInfo.objects.get(employee = employee)
-                
-
-                # updating leave balance status
-                leave_info.update_leave_balances()
                 
 
                 # Creating payroll info for each employee
@@ -168,4 +162,3 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
         
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-

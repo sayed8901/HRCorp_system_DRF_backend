@@ -37,9 +37,9 @@ class Payroll(models.Model):
     tax_deduction = models.DecimalField(max_digits=10, decimal_places=2)
     
 
-    # npl_salary_deduction = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    npl_salary_deduction = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # net_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    net_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 
     consolidated_salary = models.DecimalField(max_digits=10, decimal_places=2)
