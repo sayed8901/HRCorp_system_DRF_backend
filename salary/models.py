@@ -202,7 +202,8 @@ class SalaryInfo(models.Model):
 
         # Calculate the deduction
         if total_npl_days > 0:
-            npl_deduction = (self.effective_basic / 30) * total_npl_days  # Assuming 30 days in a month
+            # Using gross salary for NPL deduction calculation
+            npl_deduction = (self.gross_salary / 30) * total_npl_days  # Assuming 30 days in a month
 
             return Decimal(npl_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         
@@ -269,6 +270,5 @@ class SalaryInfo(models.Model):
             
         except EmploymentInfo.DoesNotExist:
             return f"{self.employee.employee_id} - No Employment Info"
-
 
 

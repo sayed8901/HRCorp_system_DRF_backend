@@ -95,7 +95,8 @@ class Payroll(models.Model):
 
         # Calculate and store NPL deduction
         if total_npl_days > 0:
-            npl_salary_deduction = (self.effective_basic / 30) * total_npl_days
+            # Using gross salary for NPL deduction calculation
+            npl_salary_deduction = (self.gross_salary / 30) * total_npl_days
 
             self.npl_salary_deduction = Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
