@@ -42,7 +42,7 @@ class PayrollListCreateAPIView(APIView):
 
 
         # Check if payroll already exists for the requested month
-        existing_payroll = Payroll.objects.filter(month=month_date)
+        existing_payroll = Payroll.objects.filter(month = month_date)
         
         if existing_payroll.exists():
             serializer = PayrollSerializer(existing_payroll, many=True)
@@ -66,10 +66,11 @@ class PayrollListCreateAPIView(APIView):
                 
 
                 # Creating payroll info for each employee
-                Payroll.objects.create(
+                payroll = Payroll(
                     employee = employee,
                     status = employment_info.status, # Active status get from employment_info.status
                     month = month_date,
+
 
                     salary_grade = salary_info.salary_grade,
                     salary_step = salary_info.salary_step,
@@ -92,25 +93,29 @@ class PayrollListCreateAPIView(APIView):
 
                     gross_salary = salary_info.gross_salary,
 
-                    npl_salary_deduction = salary_info.npl_salary_deduction, # Deduct NPL salary
-
-                    net_salary = salary_info.net_salary,
 
                     consolidated_salary = salary_info.consolidated_salary,
                     is_confirmed = salary_info.is_confirmed,
                 )
+                
+                 # Save payroll to database so that related methods can reference the instance
+                payroll.save()
+
+                # Now calculate NPL salary deduction and net salary using the methods in the model
+                payroll.calculate_npl_salary_deduction()
+                payroll.calculate_net_salary()
 
             except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
                 return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
 
-                    
+
         # Query payroll records for the specified month
-        new_payroll_queryset = Payroll.objects.filter(month = month_date)
+        new_payroll_queryset = Payroll.objects.filter(month=month_date)
         serializer = PayrollSerializer(new_payroll_queryset, many=True)
 
+
         return Response(serializer.data)
-
-
+    
 
 
 
@@ -120,7 +125,7 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
 
     def get_object(self, pk):
         try:
-            return Payroll.objects.get(pk=pk)
+            return Payroll.objects.get(pk = pk)
         except Payroll.DoesNotExist:
             return None
 

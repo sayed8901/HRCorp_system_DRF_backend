@@ -21,7 +21,7 @@ from power_user.permissions import IsPowerUserOrReadOnly
 # Utility function to update leave balances
 def update_leave_balances(employee, days_taken, leave_type, increase=False):
     try:
-        salary_info = SalaryInfo.objects.get(employee=employee)
+        salary_info = SalaryInfo.objects.get(employee = employee)
 
 
         if leave_type == 'Casual':
