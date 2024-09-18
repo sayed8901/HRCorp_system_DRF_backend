@@ -155,7 +155,7 @@ class Payroll(models.Model):
 
             # Using gross salary for NPL deduction calculation
             npl_salary_deduction = (salary_for_deduction / 30) * total_npl_days
-            print('check:', total_npl_days, npl_salary_deduction)
+            print('check npl_salary_deduction:', 'total_npl_days', total_npl_days, ', npl_salary_deduction', npl_salary_deduction)
 
             self.npl_salary_deduction = Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
@@ -170,6 +170,7 @@ class Payroll(models.Model):
             
             days_worked = (end_of_month - joining_date).days + 1
             deduction_days = days_in_month - days_worked
+            print("deduction_days:", deduction_days)
 
             if self.is_confirmed:
                 self.gross_salary -= (self.gross_salary / days_in_month) * deduction_days
@@ -182,6 +183,7 @@ class Payroll(models.Model):
                 self.late_joining_deduction = (self.gross_salary / days_in_month) * deduction_days
             else:
                 self.late_joining_deduction = (self.consolidated_salary / days_in_month) * deduction_days
+            
 
             
 
