@@ -1,10 +1,10 @@
 from django.db import models
 from employee.models import Employee
+from employment.models import EmploymentInfo
+from employment.models import PersonalInfo
 from leave.models import Leave
 
 from decimal import Decimal, ROUND_HALF_UP
-from django.utils import timezone
-from datetime import datetime
 from calendar import monthrange
 
 
@@ -12,7 +12,7 @@ from calendar import monthrange
 
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, default='Active')
+    status = models.CharField(max_length=10, default='Inactive')
     month = models.DateField()
 
 
@@ -39,6 +39,7 @@ class Payroll(models.Model):
     
 
     npl_salary_deduction = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    late_joining_deduction = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     net_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -54,9 +55,60 @@ class Payroll(models.Model):
         unique_together = ('employee', 'month')
         verbose_name = "Payroll"
         verbose_name_plural = "Payrolls"
+        
+        ordering = ['-month',]  # sorting by month
 
-        ordering = ['-month',]
 
+
+    # Retrieve the PersonalInfo for the employee.
+    def get_personal_info(self):
+        try:
+            return PersonalInfo.objects.get(employee = self.employee)
+        except PersonalInfo.DoesNotExist:
+            return None
+
+    # Retrieve the EmploymentInfo for the employee.
+    def get_employment_info(self):
+        try:
+            return EmploymentInfo.objects.get(employee = self.employee)
+        except EmploymentInfo.DoesNotExist:
+            return None
+        
+
+    @property
+    def employee_name(self):
+        personal_info = self.get_personal_info()
+        if personal_info:
+            return personal_info.name
+        return 'N/A'
+
+    @property
+    def designation(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.designation
+        return 'N/A'
+
+    @property
+    def department(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.department
+        return 'N/A'
+
+    @property
+    def job_location(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.job_location
+        return 'N/A'
+
+    @property
+    def joining_date(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.joining_date
+        return None
 
 
 
@@ -95,12 +147,43 @@ class Payroll(models.Model):
 
         # Calculate and store NPL deduction
         if total_npl_days > 0:
+            # Choose salary type for deduction
+            if self.is_confirmed:
+                salary_for_deduction = self.gross_salary
+            else:
+                salary_for_deduction = self.consolidated_salary
+
             # Using gross salary for NPL deduction calculation
-            npl_salary_deduction = (self.gross_salary / 30) * total_npl_days
+            npl_salary_deduction = (salary_for_deduction / 30) * total_npl_days
+            print('check:', total_npl_days, npl_salary_deduction)
 
             self.npl_salary_deduction = Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
             self.npl_salary_deduction = Decimal('0.00')
+        
+
+        # Deduct salary based on joining date
+        joining_date = self.joining_date
+
+        if joining_date and joining_date.month == self.month.month and joining_date.year == self.month.year:
+            days_in_month = (end_of_month - start_of_month).days + 1
+            
+            days_worked = (end_of_month - joining_date).days + 1
+            deduction_days = days_in_month - days_worked
+
+            if self.is_confirmed:
+                self.gross_salary -= (self.gross_salary / days_in_month) * deduction_days
+            else:
+                self.consolidated_salary -= (self.consolidated_salary / days_in_month) * deduction_days
+
+
+            # **Calculate late joining deduction**
+            if self.is_confirmed:
+                self.late_joining_deduction = (self.gross_salary / days_in_month) * deduction_days
+            else:
+                self.late_joining_deduction = (self.consolidated_salary / days_in_month) * deduction_days
+
+            
 
         # Save the result to the database
         self.save()
@@ -127,8 +210,16 @@ class Payroll(models.Model):
             # for 2 digit decimal precision
             self.net_salary = result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
-            # For non-confirmed staff, net salary is the consolidated salary
-            self.net_salary = self.consolidated_salary
+            # For non-confirmed staff, adjust the consolidated salary
+            if self.consolidated_salary > 0:
+                # Deduct NPL salary deduction from consolidated salary
+                self.net_salary = self.consolidated_salary - self.npl_salary_deduction
+            else:
+                # If no consolidated salary is set, default net salary to 0
+                self.net_salary = Decimal('0.00')
+            
+            # Round to 2 decimal places
+            self.net_salary = self.net_salary.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         # Save the result to the database
         self.save()
@@ -138,3 +229,4 @@ class Payroll(models.Model):
 
     def __str__(self):
         return f"Payroll for {self.employee} - {self.month.strftime('%Y-%m')}"
+

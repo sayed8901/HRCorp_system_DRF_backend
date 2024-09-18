@@ -26,6 +26,7 @@ class PayrollSerializer(serializers.ModelSerializer):
             'swf_deduction',
             'tax_deduction',
             'npl_salary_deduction',
+            'late_joining_deduction',
             'net_salary',
             'consolidated_salary',
             'is_confirmed',
