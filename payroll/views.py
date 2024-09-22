@@ -38,19 +38,12 @@ class PayrollListCreateAPIView(APIView):
             month_date = datetime.strptime(month_str, '%Y-%m').date()
         except ValueError:
             return Response({'detail': 'Invalid month format. Use YYYY-MM.'}, status=status.HTTP_400_BAD_REQUEST)
-        
 
 
-        # Check if payroll already exists for the requested month
-        existing_payroll = Payroll.objects.filter(month = month_date)
-        
-        if existing_payroll.exists():
-            serializer = PayrollSerializer(existing_payroll, many=True)
-            return Response(serializer.data)
-        
+        # Delete existing payroll records for the requested month
+        # This guarantees that each time processing payroll, all employees have their payroll records recreated.
+        Payroll.objects.filter(month = month_date).delete()
 
-
-        # Generate payroll if it does not exist
 
         # Filter active employees based on EmploymentInfo status
         active_employees = Employee.objects.filter(
