@@ -15,7 +15,7 @@ class Payroll(models.Model):
     status = models.CharField(max_length=10, default='Inactive')
     month = models.DateField()
 
-
+    # Salary components
     salary_grade = models.PositiveSmallIntegerField()
     salary_step = models.PositiveSmallIntegerField()
 
@@ -33,6 +33,7 @@ class Payroll(models.Model):
 
     gross_salary = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # Deductions
     pf_deduction = models.DecimalField(max_digits=10, decimal_places=2)
     swf_deduction = models.DecimalField(max_digits=10, decimal_places=2)
     tax_deduction = models.DecimalField(max_digits=10, decimal_places=2)

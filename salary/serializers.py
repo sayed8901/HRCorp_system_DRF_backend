@@ -26,6 +26,8 @@ class SalaryInfoSerializer(serializers.ModelSerializer):
             'net_salary',
             'consolidated_salary',
             'is_confirmed',
+            'casual_leave_balance', 
+            'sick_leave_balance'
         ]
         
         # fields = '__all__'
