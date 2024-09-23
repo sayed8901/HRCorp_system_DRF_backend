@@ -96,7 +96,11 @@ class PayrollListCreateAPIView(APIView):
 
                 # Now calculate NPL salary deduction and net salary using the methods in the model
                 payroll.calculate_npl_salary_deduction()
+                # also to deal with calculate_late_joining_deduction...
+                payroll.calculate_late_joining_deduction()
+
                 payroll.calculate_net_salary()
+
 
             except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
                 return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)

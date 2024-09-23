@@ -7,6 +7,7 @@ class SalaryInfoSerializer(serializers.ModelSerializer):
 
         fields = [
             'employee',
+
             'salary_grade',
             'salary_step',
             'starting_basic',
@@ -22,10 +23,14 @@ class SalaryInfoSerializer(serializers.ModelSerializer):
             'pf_deduction',
             'swf_deduction',
             'tax_deduction',
+
+            'late_joining_deduction',
             'npl_salary_deduction',
             'net_salary',
             'consolidated_salary',
+            
             'is_confirmed',
+
             'casual_leave_balance', 
             'sick_leave_balance'
         ]

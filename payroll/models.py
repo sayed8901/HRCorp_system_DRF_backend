@@ -113,6 +113,42 @@ class Payroll(models.Model):
 
 
 
+
+    def calculate_late_joining_deduction(self):
+        joining_date = self.joining_date
+        start_of_month = self.month.replace(day=1)
+        _, last_day = monthrange(self.month.year, self.month.month)
+        end_of_month = self.month.replace(day=last_day)
+
+        # Deduct salary based on joining date
+        joining_date = self.joining_date
+
+        if joining_date and joining_date.month == self.month.month and joining_date.year == self.month.year:
+            days_in_month = (end_of_month - start_of_month).days + 1
+            
+            days_worked = (end_of_month - joining_date).days + 1
+            deduction_days = days_in_month - days_worked
+            print("deduction_days:", deduction_days)
+
+            if self.is_confirmed:
+                self.gross_salary -= (self.gross_salary / days_in_month) * deduction_days
+            else:
+                self.consolidated_salary -= (self.consolidated_salary / days_in_month) * deduction_days
+
+
+            # **Calculate late joining deduction**
+            if self.is_confirmed:
+                self.late_joining_deduction = (self.gross_salary / days_in_month) * deduction_days
+            else:
+                self.late_joining_deduction = (self.consolidated_salary / days_in_month) * deduction_days
+            
+
+        # Save the result to the database
+        self.save()
+
+
+
+
     def calculate_npl_salary_deduction(self):
         """
         This method calculates and stores the NPL salary deduction.
@@ -161,32 +197,7 @@ class Payroll(models.Model):
             self.npl_salary_deduction = Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
             self.npl_salary_deduction = Decimal('0.00')
-        
 
-        # Deduct salary based on joining date
-        joining_date = self.joining_date
-
-        if joining_date and joining_date.month == self.month.month and joining_date.year == self.month.year:
-            days_in_month = (end_of_month - start_of_month).days + 1
-            
-            days_worked = (end_of_month - joining_date).days + 1
-            deduction_days = days_in_month - days_worked
-            print("deduction_days:", deduction_days)
-
-            if self.is_confirmed:
-                self.gross_salary -= (self.gross_salary / days_in_month) * deduction_days
-            else:
-                self.consolidated_salary -= (self.consolidated_salary / days_in_month) * deduction_days
-
-
-            # **Calculate late joining deduction**
-            if self.is_confirmed:
-                self.late_joining_deduction = (self.gross_salary / days_in_month) * deduction_days
-            else:
-                self.late_joining_deduction = (self.consolidated_salary / days_in_month) * deduction_days
-            
-
-            
 
         # Save the result to the database
         self.save()
@@ -224,12 +235,11 @@ class Payroll(models.Model):
             # Round to 2 decimal places
             self.net_salary = self.net_salary.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
+
         # Save the result to the database
         self.save()
 
 
 
-
     def __str__(self):
         return f"Payroll for {self.employee} - {self.month.strftime('%Y-%m')}"
-

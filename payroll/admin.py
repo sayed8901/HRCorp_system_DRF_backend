@@ -10,12 +10,14 @@ class PayrollAdmin(admin.ModelAdmin):
         'id',
         'month', 
         'employee_id', 
+
         'employee_name',
         'joining_date',
         'designation',
         'department',
         'job_location',
         'status', 
+
         'salary_grade', 
         'salary_step', 
         'starting_basic', 
@@ -31,8 +33,9 @@ class PayrollAdmin(admin.ModelAdmin):
         'pf_deduction', 
         'swf_deduction', 
         'tax_deduction', 
-        'npl_salary_deduction', 
+        
         'late_joining_deduction', 
+        'npl_salary_deduction', 
         'net_salary', 
         'consolidated_salary',
         'is_confirmed', 

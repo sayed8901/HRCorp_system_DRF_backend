@@ -1,14 +1,17 @@
 from django.db import models
 from employee.models import Employee
 from leave.models import Leave
-from employment.models import EmploymentInfo  
+from employment.models import EmploymentInfo
+
 from employee.choices import *
 
 from django.core.exceptions import ValidationError
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
+from calendar import monthrange
+
 
 
 
@@ -161,6 +164,74 @@ class SalaryInfo(models.Model):
 
 
 
+    # Consolidated salary (150% of effective basic)
+    @property
+    def consolidated_salary(self):
+        if not self.is_confirmed: 
+            # Consolidated salary is 150% of the effective basic salary
+            result = self.effective_basic * Decimal('1.5')
+            # for 2 digit decimal precision
+            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        return Decimal('0.00')
+
+
+
+
+    # Retrieve the EmploymentInfo for the employee.
+    def get_employment_info(self):
+        try:
+            return EmploymentInfo.objects.get(employee = self.employee)
+        except EmploymentInfo.DoesNotExist:
+            return None
+    
+
+    @property
+    def joining_date(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.joining_date
+        return None
+    
+
+
+
+    @property
+    def late_joining_deduction(self):
+        joining_date = self.joining_date
+
+        # Get the current date
+        now = timezone.now().date()  # Convert to date
+        start_of_month = now.replace(day=1)
+
+        # Calculate the end of the current month
+        _, last_day_of_month = monthrange(now.year, now.month)
+        end_of_month = now.replace(day=last_day_of_month)
+
+        # Deduct salary based on joining date
+        days_in_month = last_day_of_month
+
+        if joining_date and joining_date > end_of_month:
+            return Decimal('0.00')  # Joined after the current month
+
+        # Determine the deduction based on joining date
+        if joining_date and joining_date < start_of_month:
+            deduction_days = 0  # No deduction if joined before the month starts
+        elif joining_date and joining_date >= start_of_month:
+            days_worked = (end_of_month - joining_date).days + 1
+            deduction_days = days_in_month - days_worked
+        else:
+            deduction_days = days_in_month
+
+        # Calculate the deduction amount
+        if self.is_confirmed:
+            deduction = (self.gross_salary / days_in_month) * deduction_days
+        else:
+            deduction = (self.consolidated_salary / days_in_month) * deduction_days
+
+        return deduction.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+
 
     @property
     def npl_salary_deduction(self):
@@ -202,14 +273,19 @@ class SalaryInfo(models.Model):
 
         # Calculate the deduction
         if total_npl_days > 0:
+            # Choose salary type for deduction
+            if self.is_confirmed:
+                salary_for_deduction = self.gross_salary
+            else:
+                salary_for_deduction = self.consolidated_salary
+
             # Using gross salary for NPL deduction calculation
-            npl_deduction = (self.gross_salary / 30) * total_npl_days  # Assuming 30 days in a month
+            npl_salary_deduction = (salary_for_deduction / 30) * total_npl_days
+            print('check npl_salary_deduction:', 'total_npl_days', total_npl_days, ', npl_salary_deduction', npl_salary_deduction)
 
-            return Decimal(npl_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        
-
-        return Decimal('0.00')
-
+            return Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        else:
+            return Decimal('0.00')
 
 
 
@@ -224,29 +300,27 @@ class SalaryInfo(models.Model):
                     self.pf_deduction +
                     self.swf_deduction +
                     self.tax_deduction +
-                    self.npl_salary_deduction
+                    self.npl_salary_deduction + 
+                    self.late_joining_deduction
                 )
             )
             # for 2 digit decimal precision
             return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
-            # For non-confirmed staff, net salary is the consolidated salary
-            return self.consolidated_salary
-        
-
-
-
-
-    # Consolidated salary (150% of effective basic)
-    @property
-    def consolidated_salary(self):
-        if not self.is_confirmed: 
-            # Consolidated salary is 150% of the effective basic salary
-            result = self.effective_basic * Decimal('1.5')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
-
+            # For non-confirmed staff, adjust the consolidated salary
+            if self.consolidated_salary > 0:
+                # Deduct NPL salary deduction from consolidated salary
+                net_salary = self.consolidated_salary - (
+                    self.npl_salary_deduction + 
+                    self.late_joining_deduction
+                )
+            else:
+                # If no consolidated salary is set, default net salary to 0
+                net_salary = Decimal('0.00')
+            
+            # Round to 2 decimal places
+            return net_salary.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            
 
 
 
