@@ -137,10 +137,7 @@ class Payroll(models.Model):
 
 
             # **Calculate late joining deduction**
-            if self.is_confirmed:
                 self.late_joining_deduction = (self.gross_salary / days_in_month) * deduction_days
-            else:
-                self.late_joining_deduction = (self.consolidated_salary / days_in_month) * deduction_days
             
 
         # Save the result to the database
@@ -218,7 +215,8 @@ class Payroll(models.Model):
                     self.pf_deduction +
                     self.swf_deduction +
                     self.tax_deduction +
-                    self.npl_salary_deduction
+                    self.npl_salary_deduction +
+                    self.late_joining_deduction
                 )
             )
             # for 2 digit decimal precision
@@ -234,6 +232,10 @@ class Payroll(models.Model):
             
             # Round to 2 decimal places
             self.net_salary = self.net_salary.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+            # ***setting consolidated salary as equal as net salary if the employee is not confirmed yet**
+            self.consolidated_salary = self.net_salary
 
 
         # Save the result to the database

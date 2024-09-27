@@ -40,6 +40,7 @@ class SalaryInfo(models.Model):
     # also to calculate the effective basic based on the selected salary_step
     def clean(self):
         grade_dict = dict(GRADE_WISE_STARTING_BASIC_SALARY_CHOICES)
+
         if self.salary_grade not in grade_dict:
             raise ValidationError("Invalid salary grade.")
 
@@ -48,7 +49,8 @@ class SalaryInfo(models.Model):
 
         # Calculate effective_basic based on salary_step 
         # Assume each salary_step increases the basic by 10%
-        self.effective_basic = (self.starting_basic + (self.starting_basic * Decimal('0.10')) * Decimal(self.salary_step)) - (self.starting_basic * Decimal('0.10'))
+        self.effective_basic = (self.starting_basic + 
+                                (self.starting_basic * Decimal('0.10')) * Decimal(self.salary_step)) - (self.starting_basic * Decimal('0.10'))
 
 
 
@@ -314,6 +316,7 @@ class SalaryInfo(models.Model):
                     self.npl_salary_deduction + 
                     self.late_joining_deduction
                 )
+
             else:
                 # If no consolidated salary is set, default net salary to 0
                 net_salary = Decimal('0.00')
@@ -328,6 +331,10 @@ class SalaryInfo(models.Model):
     def save(self, *args, **kwargs):
         # Call the clean method to calculate the starting_basic and effective_basic
         self.clean()
+
+        # Update consolidated_salary with net_salary for non-confirmed staff
+        if not self.is_confirmed:
+            self.consolidated_salary = self.net_salary
 
         super().save(*args, **kwargs)
 

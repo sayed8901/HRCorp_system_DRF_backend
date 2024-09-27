@@ -27,8 +27,7 @@ class SalaryInfoSerializer(serializers.ModelSerializer):
             'late_joining_deduction',
             'npl_salary_deduction',
             'net_salary',
-            'consolidated_salary',
-            
+            # 'consolidated_salary',
             'is_confirmed',
 
             'casual_leave_balance', 
