@@ -43,10 +43,6 @@ DEBUG = True
 # allowing all hosts
 ALLOWED_HOSTS = ["*"]
 
-# # for vercel deployment purpose
-# # allowing localhost and vercel host
-# ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
-
 
 # allowing all origins for accessing from our API
 CORS_ALLOW_ALL_ORIGINS = True

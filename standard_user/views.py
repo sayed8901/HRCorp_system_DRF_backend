@@ -66,8 +66,9 @@ class StandardUserRegistrationAPIView(APIView):
             # or, creating a confirm link (using live onRender domain)
             # confirm_link = f'https://hrcorp-system.onrender.com/standard_user/active/{user_id}/{token}/'
 
+
             # final or, creating a confirm link (using live vercel domain)
-            confirm_link = f'https://hrcorp-system.onrender.com/standard_user/active/{user_id}/{token}/'
+            confirm_link = f'https://hr-corp-system-drf-backend.vercel.app/standard_user/active/{user_id}/{token}/'
             
 
 
