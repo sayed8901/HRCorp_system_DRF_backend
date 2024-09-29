@@ -63,7 +63,10 @@ class StandardUserRegistrationAPIView(APIView):
             # creating a confirm link (using local domain)
             # confirm_link = f'http://127.0.0.1:8000/standard_user/active/{user_id}/{token}/'
             
-            # creating a confirm link (using live DRF domain)
+            # or, creating a confirm link (using live onRender domain)
+            # confirm_link = f'https://hrcorp-system.onrender.com/standard_user/active/{user_id}/{token}/'
+
+            # final or, creating a confirm link (using live vercel domain)
             confirm_link = f'https://hrcorp-system.onrender.com/standard_user/active/{user_id}/{token}/'
             
 

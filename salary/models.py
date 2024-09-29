@@ -143,6 +143,7 @@ class SalaryInfo(models.Model):
     
 
 
+
     @property
     def gross_salary(self):
         if self.is_confirmed:
@@ -166,6 +167,7 @@ class SalaryInfo(models.Model):
 
 
 
+
     # Consolidated salary (150% of effective basic)
     @property
     def consolidated_salary(self):
@@ -175,6 +177,14 @@ class SalaryInfo(models.Model):
             # for 2 digit decimal precision
             return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         return Decimal('0.00')
+    
+
+    # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
+    # However, this setter allows the consolidated_salary to be "set" without raising the error.
+    @consolidated_salary.setter
+    def consolidated_salary(self, value):
+        pass
+
 
 
 
@@ -187,6 +197,7 @@ class SalaryInfo(models.Model):
             return None
     
 
+
     @property
     def joining_date(self):
         employment_info = self.get_employment_info()
@@ -194,6 +205,7 @@ class SalaryInfo(models.Model):
             return employment_info.joining_date
         return None
     
+
 
 
 
@@ -231,6 +243,7 @@ class SalaryInfo(models.Model):
             deduction = (self.consolidated_salary / days_in_month) * deduction_days
 
         return deduction.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
 
 
 
@@ -288,6 +301,7 @@ class SalaryInfo(models.Model):
             return Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         else:
             return Decimal('0.00')
+
 
 
 

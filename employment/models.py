@@ -1,9 +1,13 @@
 from django.db import models
 from employee.models import Employee
 from employee.choices import *
+
 from django.utils.text import slugify
 
 from dateutil.relativedelta import relativedelta
+
+
+
 
 
 class PersonalInfo(models.Model):
@@ -33,18 +37,31 @@ class PersonalInfo(models.Model):
 
 
 
+
+
 class Department(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
 
     # to add automatically slug values after a Department model created or its name updated
     def save(self, *args, **kwargs):
-        if not self.slug or self.name != Department.objects.get(pk=self.pk).name:
+        # Check if this is a new object by checking if self.pk is None
+        if not self.pk:  
+            # It's a new object, so create a new slug
             self.slug = slugify(self.name)
+        else:
+            # Object already exists, check if the name has changed to update the slug
+            existing = Department.objects.get(pk=self.pk)
+            if existing.name != self.name:
+                self.slug = slugify(self.name)
+        
         super(Department, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return f'{self.name}'
+
+
 
 
 
@@ -54,12 +71,23 @@ class Designation(models.Model):
 
     # to add automatically slug values after a Designation model created or its name updated
     def save(self, *args, **kwargs):
-        if not self.slug or self.name != Designation.objects.get(pk=self.pk).name:
+        # Check if this is a new object by checking if self.pk is None
+        if not self.pk:
+            # It's a new object, so create a new slug
             self.slug = slugify(self.name)
+        else:
+            # Object already exists, check if the name has changed to update the slug
+            existing = Designation.objects.get(pk=self.pk)
+            if existing.name != self.name:
+                self.slug = slugify(self.name)
+
         super(Designation, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return f'{self.name}'
+
+
 
 
 
@@ -69,12 +97,23 @@ class JobLocation(models.Model):
 
     # to add automatically slug values after a JobLocation model created or its name updated
     def save(self, *args, **kwargs):
-        if not self.slug or self.name != JobLocation.objects.get(pk=self.pk).name:
+        # Check if this is a new object by checking if self.pk is None
+        if not self.pk:
+            # It's a new object, so create a new slug
             self.slug = slugify(self.name)
+        else:
+            # Object already exists, check if the name has changed to update the slug
+            existing = JobLocation.objects.get(pk=self.pk)
+            if existing.name != self.name:
+                self.slug = slugify(self.name)
+
         super(JobLocation, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return f'{self.name}'
+
+
 
 
 
@@ -97,6 +136,7 @@ class EmploymentInfo(models.Model):
         # Calculate tentative confirmation date by adding probation period months with joining date
         return self.joining_date + relativedelta(months = self.probation_period_months)
     
+
 
     def __str__(self):
         return f'employment info for id: {self.employee.employee_id}, status: {self.status})'
