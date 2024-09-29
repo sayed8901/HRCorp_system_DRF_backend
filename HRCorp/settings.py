@@ -40,7 +40,13 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+# allowing all hosts
+# ALLOWED_HOSTS = ["*"]
+
+# for vercel deployment purpose
+# allowing localhost and vercel host
+ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+
 
 # allowing all origins for accessing from our API
 CORS_ALLOW_ALL_ORIGINS = True
