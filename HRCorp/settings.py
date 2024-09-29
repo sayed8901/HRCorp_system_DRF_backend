@@ -41,11 +41,11 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 # allowing all hosts
-# ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]
 
-# for vercel deployment purpose
-# allowing localhost and vercel host
-ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+# # for vercel deployment purpose
+# # allowing localhost and vercel host
+# ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
 
 
 # allowing all origins for accessing from our API
