@@ -129,6 +129,7 @@ MIDDLEWARE = [
 # To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
 CSRF_TRUSTED_ORIGINS = [
     'https://hrcorp-system.onrender.com',
+    'https://hr-corp-system-drf-backend.vercel.app',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
