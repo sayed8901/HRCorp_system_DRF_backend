@@ -44,16 +44,8 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-# manage allowing all origins for accessing from our API
-CORS_ALLOW_ALL_ORIGINS = False
-
-# It's safer to specify allowed origins rather than allowing all
-CORS_ALLOWED_ORIGINS = [
-    'https://hrcorp.netlify.app',
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
-    'http://localhost:5173',
-]
+# allowing all origins for accessing from our API
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -117,11 +109,11 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 
     # for session middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 
@@ -138,11 +130,9 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     'https://hrcorp-system.onrender.com',
     'https://hr-corp-system-drf-backend.vercel.app',
-    'https://hrcorp.netlify.app',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
-
 
 
 
