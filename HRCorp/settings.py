@@ -44,8 +44,16 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-# allowing all origins for accessing from our API
-CORS_ALLOW_ALL_ORIGINS = True
+# manage allowing all origins for accessing from our API
+CORS_ALLOW_ALL_ORIGINS = False
+
+# It's safer to specify allowed origins rather than allowing all
+CORS_ALLOWED_ORIGINS = [
+    'https://hrcorp.netlify.app',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://localhost:5173',
+]
 
 
 # Application definition
