@@ -44,8 +44,15 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-# allowing all origins for accessing from our API
-CORS_ALLOW_ALL_ORIGINS = True
+# allowing origins for accessing from our API
+CORS_ALLOW_ALL_ORIGINS = False  # Set this to False to restrict origins
+
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000',        # Local backend
+    'http://localhost:8000',        # Local backend
+    'http://localhost:5173',        # frontend's localhost
+    'https://hrcorp.netlify.app',   # deployed frontend
+]
 
 
 # Application definition
@@ -109,11 +116,11 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 
     # for session middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 
