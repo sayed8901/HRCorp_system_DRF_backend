@@ -40,8 +40,8 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# setting up the allowed hosts
-ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
+# allowing all hosts
+ALLOWED_HOSTS = ["*"]
 
 
 # allowing all origins for accessing from our API
@@ -130,6 +130,7 @@ MIDDLEWARE = [
 CSRF_TRUSTED_ORIGINS = [
     'https://hrcorp-system.onrender.com',
     'https://hr-corp-system-drf-backend.vercel.app',
+    'https://hrcorp.netlify.app',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
