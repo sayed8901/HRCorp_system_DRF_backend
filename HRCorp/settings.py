@@ -40,31 +40,12 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# allowing all hosts
-ALLOWED_HOSTS = ["*"]
+# setting up the allowed hosts
+ALLOWED_HOSTS = ["127.0.0.1", ".vercel.app"]
 
 
-# manage allowing all origins for accessing from our API
-CORS_ALLOW_ALL_ORIGINS = False
-
-# It's safer to specify allowed origins rather than allowing all
-CORS_ALLOWED_ORIGINS = [
-    'https://hrcorp.netlify.app',  # Your frontend domain
-    'http://localhost:3000',       # Local development
-    'http://localhost:8000',       # Local development
-]
-
-
-# To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
-CSRF_TRUSTED_ORIGINS = [
-    'https://hrcorp-system.onrender.com',
-    'https://hr-corp-system-drf-backend.vercel.app',
-    'https://hrcorp.netlify.app',
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
-]
-
-
+# allowing all origins for accessing from our API
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -72,9 +53,6 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     # whitenoise app
     "whitenoise.runserver_nostatic",
-
-    # to handle corsheaders
-    "corsheaders",      # Should be before other apps that need it
 
     # pre defined
     'django.contrib.admin',
@@ -112,6 +90,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+
+    "corsheaders",
 ]
 
 
@@ -128,17 +108,17 @@ REST_FRAMEWORK = {
 
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',  # Should be first
-    "corsheaders.middleware.CorsMiddleware",          # Should be as high as possible
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'allauth.account.middleware.AccountMiddleware',
 
     # for session middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 
     # for CSRF middleware
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
@@ -146,6 +126,18 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
+# To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
+CSRF_TRUSTED_ORIGINS = [
+    'https://hrcorp-system.onrender.com',
+    'https://hr-corp-system-drf-backend.vercel.app',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3000",
+    "http://localhost:8000",
+)
 
 
 
@@ -291,4 +283,3 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env("EMAIL")
 EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
-
