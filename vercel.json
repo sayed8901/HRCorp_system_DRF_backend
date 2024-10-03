@@ -6,23 +6,11 @@
       "config": { "maxLambdaSize": "15mb", "runtime": "python3.11.3" }
     }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET,POST,PUT,DELETE,PATCH,OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Authorization, Content-Type, X-CSRFToken, X-Requested-With, Accept-Encoding"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "HRCorp/wsgi.py",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
     }
   ]
 }

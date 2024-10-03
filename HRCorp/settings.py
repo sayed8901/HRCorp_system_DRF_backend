@@ -55,23 +55,23 @@ CORS_ALLOWED_ORIGINS = [
     'https://hrcorp.netlify.app',   # deployed frontend
 ]
 
-CORS_ALLOW_METHODS = [
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "PATCH",
-    "OPTIONS",
-]
+# CORS_ALLOW_METHODS = [
+#     "GET",
+#     "POST",
+#     "PUT",
+#     "DELETE",
+#     "PATCH",
+#     "OPTIONS",
+# ]
 
-CORS_ALLOW_HEADERS = [
-    "authorization",
-    "content-type",
-    "x-csrftoken",
-    "x-requested-with",
-    "accept",
-    "accept-encoding",
-]
+# CORS_ALLOW_HEADERS = [
+#     "authorization",
+#     "content-type",
+#     "x-csrftoken",
+#     "x-requested-with",
+#     "accept",
+#     "accept-encoding",
+# ]
 
 
 
