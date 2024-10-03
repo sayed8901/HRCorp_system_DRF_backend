@@ -1,5 +1,4 @@
 {
-  "version": 2,
   "builds": [
     {
       "src": "HRCorp/wsgi.py",
@@ -10,8 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "HRCorp/wsgi.py",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+      "dest": "HRCorp/wsgi.py"
     }
   ]
 }
