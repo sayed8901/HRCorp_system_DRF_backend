@@ -16,15 +16,23 @@ class PersonalInfoSerializer(serializers.ModelSerializer):
 
 
 class EmploymentInfoSerializer(serializers.ModelSerializer):
-    job_location = serializers.StringRelatedField(many=False)
-    department = serializers.StringRelatedField(many=False)
-    designation = serializers.StringRelatedField(many=False)
-
     class Meta:
         model = EmploymentInfo
         fields = '__all__'
 
         read_only_fields = ['employee']
+
+    # to display names for job_location, department, and designation instead of just id only
+    def to_representation(self, instance):
+        # Get the original representation from the serializer
+        representation = super().to_representation(instance)
+        
+        # define names for job_location, department, and designation
+        representation['job_location'] = instance.job_location.name if instance.job_location else None
+        representation['department'] = instance.department.name if instance.department else None
+        representation['designation'] = instance.designation.name if instance.designation else None
+        
+        return representation
 
 
 
