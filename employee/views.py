@@ -9,7 +9,13 @@ from HRCorp.permissions import IsPowerUserForModifyButStandardOrPowerUserForPOST
 
 # Create your views here.
 class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all()
+    # queryset = Employee.objects.all()
+    queryset = Employee.objects.select_related(
+        'personalinfo', 
+        'employmentinfo', 
+        'salaryinfo', 
+        'separationinfo'
+    )
     serializer_class = EmployeeSerializer
 
     permission_classes = [IsPowerUserForModifyButStandardOrPowerUserForPOST]

@@ -17,8 +17,8 @@ class AllSalaryInfoDetailView(APIView):
     
     # both the standard_user and power_user can GET all the transfer info
     def get(self, request, format = None):
-        transfers = SalaryInfo.objects.all()
-        serializer = SalaryInfoSerializer(transfers, many=True)
+        salary_data = SalaryInfo.objects.all()
+        serializer = SalaryInfoSerializer(salary_data, many=True)
 
         return Response(serializer.data)
     

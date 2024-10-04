@@ -45,32 +45,14 @@ ALLOWED_HOSTS = ["*"]
 
 
 # manage allowing origins for accessing from our API
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000',        # Local backend
-    'http://localhost:8000',        # Local backend
-    'https://hr-corp-system-drf-backend.vercel.app',  # Backend on Vercel
-    'http://localhost:5173',        # frontend's localhost
-    'https://hrcorp.netlify.app',   # deployed frontend
-]
-
-# CORS_ALLOW_METHODS = [
-#     "GET",
-#     "POST",
-#     "PUT",
-#     "DELETE",
-#     "PATCH",
-#     "OPTIONS",
-# ]
-
-# CORS_ALLOW_HEADERS = [
-#     "authorization",
-#     "content-type",
-#     "x-csrftoken",
-#     "x-requested-with",
-#     "accept",
-#     "accept-encoding",
+# CORS_ALLOWED_ORIGINS = [
+#     'http://127.0.0.1:8000',        # Local backend
+#     'http://localhost:8000',        # Local backend
+#     'https://hr-corp-system-drf-backend.vercel.app',  # Backend on Vercel
+#     'http://localhost:5173',        # frontend's localhost
+#     'https://hrcorp.netlify.app',   # deployed frontend
 # ]
 
 
@@ -153,6 +135,8 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
+
+
 # To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
 CSRF_TRUSTED_ORIGINS = [
     'https://hrcorp-system.onrender.com',       # Backend on onRender
@@ -183,7 +167,10 @@ TEMPLATES = [
     },
 ]
 
+
 SITE_ID = 1
+
+
 
 # default WSGI_APPLICATION settings
 # WSGI_APPLICATION = 'HRCorp.wsgi.application'
@@ -287,11 +274,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
 # setting STATIC_ROOT for vercel deployment issue
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+
 # defining media path
 STATIC_URL = 'media/'
+
 
 
 # Default primary key field type
