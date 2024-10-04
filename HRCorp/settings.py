@@ -60,8 +60,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
-    # whitenoise app
-    "whitenoise.runserver_nostatic",
+    # whitenoise app (for vercel development only)
+    # "whitenoise.runserver_nostatic",
 
     # pre defined
     'django.contrib.admin',
@@ -131,8 +131,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # whitenoise middleware
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # whitenoise middleware (for vercel deployment only)
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 
@@ -172,11 +172,11 @@ SITE_ID = 1
 
 
 
-# default WSGI_APPLICATION settings
-# WSGI_APPLICATION = 'HRCorp.wsgi.application'
+# default WSGI_APPLICATION settings (also can be used for onRender deployment)
+WSGI_APPLICATION = 'HRCorp.wsgi.application'
 
 # WSGI_APPLICATION settings modified for vercel deployment issue
-WSGI_APPLICATION = 'HRCorp.wsgi.app'
+# WSGI_APPLICATION = 'HRCorp.wsgi.app'
 
 
 
@@ -186,14 +186,14 @@ WSGI_APPLICATION = 'HRCorp.wsgi.app'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# # initial: 1st option for database
-# # default sqlite3 database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# initial: 1st option for database
+# default sqlite3 database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # # 2nd option for database
@@ -222,19 +222,19 @@ WSGI_APPLICATION = 'HRCorp.wsgi.app'
 
 
 
-# Final: 4th option for database
-# PostgreSQL Database for super_base deployment
-# credentials accessed from .env file
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
-    }
-}
+# # Final for vercel deploy: 4th option for database
+# # PostgreSQL Database for super_base deployment
+# # credentials accessed from .env file
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env("DB_NAME"),
+#         'USER': env("DB_USER"),
+#         'PASSWORD': env("DB_PASSWORD"),
+#         'HOST': env("DB_HOST"),
+#         'PORT': env("DB_PORT"),
+#     }
+# }
 
 
 
