@@ -64,11 +64,11 @@ class PowerUserRegistrationAPIView(APIView):
             # confirm_link = f'http://127.0.0.1:8000/power_user/active/{user_id}/{token}/'
             
             # or, creating a confirm link (using live onRender domain)
-            # confirm_link = f'https://hrcorp-system.onrender.com/power_user/active/{user_id}/{token}/'
+            confirm_link = f'https://hrcorp-system.onrender.com/power_user/active/{user_id}/{token}/'
 
 
             # final or, creating a confirm link (using live vercel domain)
-            confirm_link = f'https://hr-corp-system-drf-backend.vercel.app/power_user/active/{user_id}/{token}/'
+            # confirm_link = f'https://hr-corp-system-drf-backend.vercel.app/power_user/active/{user_id}/{token}/'
             
 
 
