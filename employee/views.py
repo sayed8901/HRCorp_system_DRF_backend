@@ -53,7 +53,7 @@ class AllEmployeeInfoView(APIView):
             employment_info = EmploymentInfoSerializer(employee.employmentinfo).data
 
             # salary informations
-            # salary_info = SalaryInfoSerializer(employee.salaryinfo).data
+            salary_info = SalaryInfoSerializer(employee.salaryinfo).data
 
             # Collect job profile history
             job_profile_history = JobProfileHistorySerializer(employee.jobprofilehistory_set.all(), many=True).data
@@ -80,7 +80,7 @@ class AllEmployeeInfoView(APIView):
                 "employee_id": employee.employee_id,
                 "personal_info": personal_info,
                 "employment_info": employment_info,
-                # "salary_info": salary_info,
+                "salary_info": salary_info,
                 "job_profile_details": job_profile_details,
                 "last_promotion": last_promotion,
                 "separation_info": separation_info,
