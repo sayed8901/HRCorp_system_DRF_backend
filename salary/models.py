@@ -60,7 +60,8 @@ class SalaryInfo(models.Model):
     # to find the confirmation status & joining date later on..
     def get_employment_info(self):
         try:
-            return EmploymentInfo.objects.get(employee = self.employee)
+            employment_info = EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
+            return employment_info.is_confirmed
         except EmploymentInfo.DoesNotExist:
             return None
 
