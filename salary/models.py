@@ -50,95 +50,105 @@ class SalaryInfo(models.Model):
         # Calculate effective_basic based on salary_step 
         # Assume each salary_step increases the basic by 10%
         self.effective_basic = (self.starting_basic + 
-                                (self.starting_basic * Decimal('0.10')) * Decimal(self.salary_step)) - (self.starting_basic * Decimal('0.10'))
+                                    (self.starting_basic * Decimal('0.10')) * Decimal(self.salary_step)
+                               ) - (self.starting_basic * Decimal('0.10'))
 
+
+
+
+    # Retrieve the EmploymentInfo for the employee.
+    # to find the confirmation status & joining date later on..
+    def get_employment_info(self):
+        try:
+            return EmploymentInfo.objects.get(employee = self.employee)
+        except EmploymentInfo.DoesNotExist:
+            return None
+
+
+
+    @property
+    def joining_date(self):
+        employment_info = self.get_employment_info()
+        if employment_info:
+            return employment_info.joining_date
+        return None
+    
 
 
     # to check if the staff is confirmed or not
     @property
     def is_confirmed(self):
         try:
-            employment_info = EmploymentInfo.objects.get(employee = self.employee)
+            employment_info = self.get_employment_info()
             return employment_info.is_confirmed
         except EmploymentInfo.DoesNotExist:
             return False
 
 
+
+
+
+    # creating common function to calculate allowance amount for different fields
+    def calculate_allowance_amount(self, percentage):
+        if self.is_confirmed:
+            result = self.effective_basic * Decimal(percentage)
+
+            # for 2 digit decimal precision
+            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        return Decimal('0.00')
+    
+    
+
     # house rent (50% of effective basic)
     @property
     def house_rent(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.50')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.50')
 
 
     # medical allowance (20% of effective basic)
     @property
     def medical_allowance(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.20')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.20')
         
 
     # conveyance allowance (10% of effective basic)
     @property
     def conveyance(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.10')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.10')
     
 
     # hardship allowance (10% of effective basic)
     @property
     def hardship(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.10')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.10')
 
 
     # PF contribution (10% of effective basic)
     @property
     def pf_contribution(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.10')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.10')
 
 
     # PF deduction (20% of effective basic)
     @property
     def pf_deduction(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.20')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.20')
 
 
     # SWF deduction (1% of effective basic)
     @property
     def swf_deduction(self):
-        if self.is_confirmed: 
-            result = self.effective_basic * Decimal('0.01')
-            # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return Decimal('0.00')
+        return self.calculate_allowance_amount('0.01')
     
+
 
     @property
     def tax_deduction(self):
         # Tax deduction if effective basic salary is >= 20000
         if self.is_confirmed and self.effective_basic >= 20000:
             return Decimal('500.00')    # tk 500.00 tax deduction
+        
         return Decimal('0.00')
     
 
@@ -174,36 +184,11 @@ class SalaryInfo(models.Model):
         if not self.is_confirmed: 
             # Consolidated salary is 150% of the effective basic salary
             result = self.effective_basic * Decimal('1.5')
+
             # for 2 digit decimal precision
             return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
         return Decimal('0.00')
-    
-
-    # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
-    # However, this setter allows the consolidated_salary to be "set" without raising the error.
-    @consolidated_salary.setter
-    def consolidated_salary(self, value):
-        pass
-
-
-
-
-
-    # Retrieve the EmploymentInfo for the employee.
-    def get_employment_info(self):
-        try:
-            return EmploymentInfo.objects.get(employee = self.employee)
-        except EmploymentInfo.DoesNotExist:
-            return None
-    
-
-
-    @property
-    def joining_date(self):
-        employment_info = self.get_employment_info()
-        if employment_info:
-            return employment_info.joining_date
-        return None
     
 
 
@@ -310,18 +295,18 @@ class SalaryInfo(models.Model):
     def net_salary(self):
         if self.is_confirmed:
             # Regular net salary for confirmed staff
-            result = (
-                self.gross_salary -
-                (
-                    self.pf_deduction +
-                    self.swf_deduction +
-                    self.tax_deduction +
-                    self.npl_salary_deduction + 
-                    self.late_joining_deduction
-                )
+            deductions = (
+                self.pf_deduction +
+                self.swf_deduction +
+                self.tax_deduction +
+                self.npl_salary_deduction + 
+                self.late_joining_deduction
             )
+            net_salary_amount = self.gross_salary - deductions
+            
             # for 2 digit decimal precision
-            return result.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            return net_salary_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
         else:
             # For non-confirmed staff, adjust the consolidated salary
             if self.consolidated_salary > 0:
