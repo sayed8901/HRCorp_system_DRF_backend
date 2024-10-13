@@ -56,13 +56,20 @@ class SalaryInfo(models.Model):
 
 
 
+
+    # Cache employment info to avoid repeated database calls
+    _employment_info_cache = None
+
+
     # Retrieve the EmploymentInfo for the employee.
     # to find the confirmation status & joining date later on..
     def get_employment_info(self):
-        try:
-            return EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
-        except EmploymentInfo.DoesNotExist:
-            return None
+        if self._employment_info_cache is None:  # Check cache first
+            try:
+                self._employment_info_cache = EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
+            except EmploymentInfo.DoesNotExist:
+                self._employment_info_cache = None
+        return self._employment_info_cache
 
 
 
@@ -205,108 +212,99 @@ class SalaryInfo(models.Model):
 
 
 
-    ### temporary solve
+
     @property
     def late_joining_deduction(self):
-        return 0
-    
+        joining_date = self.joining_date
+
+        # Get the current date
+        now = timezone.now().date()  # Convert to date
+        start_of_month = now.replace(day=1)
+
+        # Calculate the end of the current month
+        _, last_day_of_month = monthrange(now.year, now.month)
+        end_of_month = now.replace(day=last_day_of_month)
+
+        # Deduct salary based on joining date
+        days_in_month = last_day_of_month
+
+        if joining_date and joining_date > end_of_month:
+            return Decimal('0.00')  # Joined after the current month
+
+        # Determine the deduction based on joining date
+        if joining_date and joining_date < start_of_month:
+            deduction_days = 0  # No deduction if joined before the month starts
+        elif joining_date and joining_date >= start_of_month:
+            days_worked = (end_of_month - joining_date).days + 1
+            deduction_days = days_in_month - days_worked
+        else:
+            deduction_days = days_in_month
+
+        # Calculate the deduction amount
+        if self.is_confirmed:
+            deduction = (self.gross_salary / days_in_month) * deduction_days
+        else:
+            deduction = (self.consolidated_salary / days_in_month) * deduction_days
+
+        return deduction.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+
+
+
+
     @property
     def npl_salary_deduction(self):
-        return 0
-    
-    
-    # @property
-    # def late_joining_deduction(self):
-    #     joining_date = self.joining_date
+        now = timezone.now()
 
-    #     # Get the current date
-    #     now = timezone.now().date()  # Convert to date
-    #     start_of_month = now.replace(day=1)
-
-    #     # Calculate the end of the current month
-    #     _, last_day_of_month = monthrange(now.year, now.month)
-    #     end_of_month = now.replace(day=last_day_of_month)
-
-    #     # Deduct salary based on joining date
-    #     days_in_month = last_day_of_month
-
-    #     if joining_date and joining_date > end_of_month:
-    #         return Decimal('0.00')  # Joined after the current month
-
-    #     # Determine the deduction based on joining date
-    #     if joining_date and joining_date < start_of_month:
-    #         deduction_days = 0  # No deduction if joined before the month starts
-    #     elif joining_date and joining_date >= start_of_month:
-    #         days_worked = (end_of_month - joining_date).days + 1
-    #         deduction_days = days_in_month - days_worked
-    #     else:
-    #         deduction_days = days_in_month
-
-    #     # Calculate the deduction amount
-    #     if self.is_confirmed:
-    #         deduction = (self.gross_salary / days_in_month) * deduction_days
-    #     else:
-    #         deduction = (self.consolidated_salary / days_in_month) * deduction_days
-
-    #     return deduction.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        # Get the start and end date of the current month
+        start_of_month = now.replace(day = 1, hour = 0, minute = 0, second = 0, microsecond = 0)
+        end_of_month = (start_of_month + timezone.timedelta(days = 31)).replace(day = 1) - timezone.timedelta(seconds=1)
 
 
+        # Filter Non_Paid_Leave entries for the current month
+        npl_leaves = Leave.objects.select_related('employee').filter(
+            employee = self.employee,
+            leave_type = 'Non_Paid_Leave',
+            leave_start_date__lte = end_of_month,
+            leave_end_date__gte = start_of_month,
+        )
 
 
+        # Calculate the total number of NPL days in the current month
+        total_npl_days = 0
 
-    # @property
-    # def npl_salary_deduction(self):
-    #     now = timezone.now()
-
-    #     # Get the start and end date of the current month
-    #     start_of_month = now.replace(day = 1, hour = 0, minute = 0, second = 0, microsecond = 0)
-    #     end_of_month = (start_of_month + timezone.timedelta(days = 31)).replace(day = 1) - timezone.timedelta(seconds=1)
-
-
-    #     # Filter Non_Paid_Leave entries for the current month
-    #     npl_leaves = Leave.objects.select_related('employee').filter(
-    #         employee = self.employee,
-    #         leave_type = 'Non_Paid_Leave',
-    #         leave_start_date__lte = end_of_month,
-    #         leave_end_date__gte = start_of_month,
-    #     )
-
-
-    #     # Calculate the total number of NPL days in the current month
-    #     total_npl_days = 0
-
-    #     for leave in npl_leaves:
-    #         # Ensure leave_start_date and leave_end_date are datetime objects
-    #         if not isinstance(leave.leave_start_date, datetime):
-    #             leave.leave_start_date = timezone.make_aware(datetime.combine(leave.leave_start_date, datetime.min.time()))
+        for leave in npl_leaves:
+            # Ensure leave_start_date and leave_end_date are datetime objects
+            if not isinstance(leave.leave_start_date, datetime):
+                leave.leave_start_date = timezone.make_aware(datetime.combine(leave.leave_start_date, datetime.min.time()))
                 
-    #         if not isinstance(leave.leave_end_date, datetime):
-    #             leave.leave_end_date = timezone.make_aware(datetime.combine(leave.leave_end_date, datetime.min.time()))
+            if not isinstance(leave.leave_end_date, datetime):
+                leave.leave_end_date = timezone.make_aware(datetime.combine(leave.leave_end_date, datetime.min.time()))
 
 
-    #         leave_start = max(leave.leave_start_date, start_of_month)
-    #         leave_end = min(leave.leave_end_date, end_of_month)
+            leave_start = max(leave.leave_start_date, start_of_month)
+            leave_end = min(leave.leave_end_date, end_of_month)
 
-    #         # Calculate the total number of NPL days
-    #         if leave_start <= leave_end:
-    #             total_npl_days += (leave_end - leave_start).days + 1
+            # Calculate the total number of NPL days
+            if leave_start <= leave_end:
+                total_npl_days += (leave_end - leave_start).days + 1
 
 
-    #     # Calculate the deduction
-    #     if total_npl_days > 0:
-    #         # Choose salary type for deduction
-    #         if self.is_confirmed:
-    #             salary_for_deduction = self.gross_salary
-    #         else:
-    #             salary_for_deduction = self.consolidated_salary
+        # Calculate the deduction
+        if total_npl_days > 0:
+            # Choose salary type for deduction
+            if self.is_confirmed:
+                salary_for_deduction = self.gross_salary
+            else:
+                salary_for_deduction = self.consolidated_salary
 
-    #         # Using gross salary for NPL deduction calculation
-    #         npl_salary_deduction = (salary_for_deduction / 30) * total_npl_days
-    #         print('check npl_salary_deduction:', 'total_npl_days', total_npl_days, ', npl_salary_deduction', npl_salary_deduction)
+            # Using gross salary for NPL deduction calculation
+            npl_salary_deduction = (salary_for_deduction / 30) * total_npl_days
+            print('check npl_salary_deduction:', 'total_npl_days', total_npl_days, ', npl_salary_deduction', npl_salary_deduction)
 
-    #         return Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-    #     else:
-    #         return Decimal('0.00')
+            return Decimal(npl_salary_deduction).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        else:
+            return Decimal('0.00')
 
 
 
@@ -371,3 +369,6 @@ class SalaryInfo(models.Model):
             
         except EmploymentInfo.DoesNotExist:
             return f"{self.employee.employee_id} - No Employment Info"
+
+
+
