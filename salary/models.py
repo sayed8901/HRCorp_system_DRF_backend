@@ -57,7 +57,11 @@ class SalaryInfo(models.Model):
 
 
 
-    # Cache employment info to avoid repeated database calls
+    ### Cache employment info to avoid repeated database calls
+    """
+        * Used a caching mechanism for the get_employment_info method to reduce the number of database calls. 
+        * It stores the employment info in an instance variable after the first retrieval.
+    """
     _employment_info_cache = None
 
 
