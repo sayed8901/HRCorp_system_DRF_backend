@@ -191,15 +191,13 @@ class SalaryInfo(models.Model):
         return Decimal('0.00')
     
 
-
-
     
-    # # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
-    # # However, this setter allows the consolidated_salary to be "set" without raising the error.
+    # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
+    # However, this setter allows the consolidated_salary to be "set" without raising the error.
     
-    # @consolidated_salary.setter
-    # def consolidated_salary(self, value):
-    #     pass
+    @consolidated_salary.setter
+    def consolidated_salary(self, value):
+        pass
 
 
 
@@ -342,9 +340,9 @@ class SalaryInfo(models.Model):
         # Call the clean method to calculate the starting_basic and effective_basic
         self.clean()
 
-        # # Update consolidated_salary with net_salary for non-confirmed staff
-        # if not self.is_confirmed:
-        #     self.consolidated_salary = self.net_salary
+        # Update consolidated_salary with net_salary for non-confirmed staff
+        if not self.is_confirmed:
+            self.consolidated_salary = self.net_salary
 
         super().save(*args, **kwargs)
 
@@ -361,5 +359,6 @@ class SalaryInfo(models.Model):
             
         except EmploymentInfo.DoesNotExist:
             return f"{self.employee.employee_id} - No Employment Info"
+
 
 
