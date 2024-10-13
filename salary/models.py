@@ -17,20 +17,20 @@ from calendar import monthrange
 
 
 class SalaryInfo(models.Model):
-    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, to_field='employee_id')
+    employee = models.OneToOneField(Employee, on_delete = models.CASCADE, to_field = 'employee_id')
 
-    salary_grade = models.PositiveSmallIntegerField(choices=SALARY_GRADE_CHOICES)
-    salary_step = models.PositiveSmallIntegerField(choices=SALARY_STEP_CHOICES)
+    salary_grade = models.PositiveSmallIntegerField(choices = SALARY_GRADE_CHOICES)
+    salary_step = models.PositiveSmallIntegerField(choices = SALARY_STEP_CHOICES)
 
-    starting_basic = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-    effective_basic = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    starting_basic = models.DecimalField(max_digits = 10, decimal_places = 2, editable = False)
+    effective_basic = models.DecimalField(max_digits = 10, decimal_places = 2, editable = False)
 
-    festival_bonus = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    other_allowance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    festival_bonus = models.DecimalField(max_digits = 10, decimal_places = 2, blank = True, null = True)
+    other_allowance = models.DecimalField(max_digits = 10, decimal_places = 2, blank = True, null = True)
 
 
-    casual_leave_balance = models.PositiveIntegerField(default=10)
-    sick_leave_balance = models.PositiveIntegerField(default=14)
+    casual_leave_balance = models.PositiveIntegerField(default = 10)
+    sick_leave_balance = models.PositiveIntegerField(default = 14)
 
 
 
@@ -60,8 +60,7 @@ class SalaryInfo(models.Model):
     # to find the confirmation status & joining date later on..
     def get_employment_info(self):
         try:
-            employment_info = EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
-            return employment_info.is_confirmed
+            return EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
         except EmploymentInfo.DoesNotExist:
             return None
 
@@ -69,10 +68,11 @@ class SalaryInfo(models.Model):
 
     @property
     def joining_date(self):
-        employment_info = self.get_employment_info()
-        if employment_info:
+        try:
+            employment_info = self.get_employment_info()
             return employment_info.joining_date
-        return None
+        except EmploymentInfo.DoesNotExist:
+            return None
     
 
 
@@ -100,6 +100,8 @@ class SalaryInfo(models.Model):
         return Decimal('0.00')
     
     
+
+    # Define various allowances as properties
 
     # house rent (50% of effective basic)
     @property
@@ -193,12 +195,12 @@ class SalaryInfo(models.Model):
     
 
     
-    # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
-    # However, this setter allows the consolidated_salary to be "set" without raising the error.
+    # # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
+    # # However, this setter allows the consolidated_salary to be "set" without raising the error.
     
-    @consolidated_salary.setter
-    def consolidated_salary(self, value):
-        pass
+    # @consolidated_salary.setter
+    # def consolidated_salary(self, value):
+    #     pass
 
 
 
@@ -248,12 +250,12 @@ class SalaryInfo(models.Model):
         now = timezone.now()
 
         # Get the start and end date of the current month
-        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        end_of_month = (start_of_month + timezone.timedelta(days=31)).replace(day=1) - timezone.timedelta(seconds=1)
+        start_of_month = now.replace(day = 1, hour = 0, minute = 0, second = 0, microsecond = 0)
+        end_of_month = (start_of_month + timezone.timedelta(days = 31)).replace(day = 1) - timezone.timedelta(seconds=1)
 
 
         # Filter Non_Paid_Leave entries for the current month
-        npl_leaves = Leave.objects.filter(
+        npl_leaves = Leave.objects.select_related('employee').filter(
             employee = self.employee,
             leave_type = 'Non_Paid_Leave',
             leave_start_date__lte = end_of_month,
@@ -341,9 +343,9 @@ class SalaryInfo(models.Model):
         # Call the clean method to calculate the starting_basic and effective_basic
         self.clean()
 
-        # Update consolidated_salary with net_salary for non-confirmed staff
-        if not self.is_confirmed:
-            self.consolidated_salary = self.net_salary
+        # # Update consolidated_salary with net_salary for non-confirmed staff
+        # if not self.is_confirmed:
+        #     self.consolidated_salary = self.net_salary
 
         super().save(*args, **kwargs)
 
@@ -360,6 +362,3 @@ class SalaryInfo(models.Model):
             
         except EmploymentInfo.DoesNotExist:
             return f"{self.employee.employee_id} - No Employment Info"
-
-
-
