@@ -193,6 +193,17 @@ class SalaryInfo(models.Model):
 
 
 
+    
+    # In this case, the setter doesn’t have to do anything special because i'm calculating consolidated_salary within the property itself. 
+    # However, this setter allows the consolidated_salary to be "set" without raising the error.
+    
+    @consolidated_salary.setter
+    def consolidated_salary(self, value):
+        pass
+
+
+
+
 
     @property
     def late_joining_deduction(self):
@@ -303,7 +314,7 @@ class SalaryInfo(models.Model):
                 self.late_joining_deduction
             )
             net_salary_amount = self.gross_salary - deductions
-            
+
             # for 2 digit decimal precision
             return net_salary_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
         
