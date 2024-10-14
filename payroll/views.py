@@ -46,9 +46,16 @@ class PayrollListCreateAPIView(APIView):
 
 
 
+
+
         # Caching salary info and employment info to minimize database hits
-        salary_info_cache = {}
-        employment_info_cache = {}
+        """
+            * Salary info and employment info are cached in dictionaries (salary_info_cache and employment_info_cache). 
+            * These caches are keyed by employee.employee_id so that for each employee, the salary and employment information are fetched only once, minimizing database queries during the payroll process.
+        """
+        _salary_info_cache = {}
+        _employment_info_cache = {}
+
 
 
         # Filter active employees based on EmploymentInfo status
@@ -57,20 +64,28 @@ class PayrollListCreateAPIView(APIView):
         ).select_related('employmentinfo')
 
 
+
+        # List to store payroll entries for bulk creation
+        payroll_entries = []
+
+        # List to store any errors encountered during processing
+        errors = []
+
+
         for employee in active_employees:
             try:
                 # Cache SalaryInfo to avoid redundant queries
-                if employee.employee_id not in salary_info_cache:
-                    salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
+                if employee.employee_id not in _salary_info_cache:
+                    _salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
 
-                salary_info = salary_info_cache[employee.employee_id]
+                salary_info = _salary_info_cache[employee.employee_id]
 
 
                 # Cache EmploymentInfo to avoid redundant queries
-                if employee.employee_id not in employment_info_cache:
-                    employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
+                if employee.employee_id not in _employment_info_cache:
+                    _employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
 
-                employment_info = employment_info_cache[employee.employee_id]
+                employment_info = _employment_info_cache[employee.employee_id]
                 
 
 
@@ -107,22 +122,40 @@ class PayrollListCreateAPIView(APIView):
                     is_confirmed = salary_info.is_confirmed,
                 )
                 
-                # Save payroll to database so that related methods can reference the instance
-                payroll.save()
-
-                # Now calculate NPL salary deduction and net salary using the methods in the model
-                payroll.calculate_npl_salary_deduction()
-                # also to deal with calculate_late_joining_deduction...
-                payroll.calculate_late_joining_deduction()
-
-                payroll.calculate_net_salary()
+                # Saving the payroll_entries
+                payroll_entries.append(payroll)
 
 
             except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
-                return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+                errors.append(f"Error for employee {employee.employee_id}: {str(e)}")
+
+        if errors:
+            return Response({'errors': errors}, status=status.HTTP_404_NOT_FOUND)
+        
 
 
-        # Query payroll records for the specified month
+        # Bulk insert payroll entries
+        """
+            * Payroll entries are created in bulk using bulk_create with a batch_size=100, reducing the number of insert operations and improving performance.
+        """
+        Payroll.objects.bulk_create(payroll_entries, batch_size=100)
+
+
+        # Calculate NPL salary deduction, late joining deduction, and net salary for each payroll in bulk       # using the methods in the payroll model
+        """
+            * Batch Payroll Calculation:
+                After all payroll records are inserted, calculations like NPL salary deduction, late joining deduction, and net salary are done in memory, reducing the number of updates to the database.
+        """
+        for payroll in payroll_entries:
+            payroll.calculate_npl_salary_deduction()
+
+            payroll.calculate_late_joining_deduction()
+
+            payroll.calculate_net_salary()
+
+
+
+        # Fetch new payroll records for the specified month
         new_payroll_queryset = Payroll.objects.filter(month = month_date)
         serializer = PayrollSerializer(new_payroll_queryset, many = True)
 
@@ -180,3 +213,5 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
         
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     
+
+

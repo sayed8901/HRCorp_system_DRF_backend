@@ -57,7 +57,7 @@ class Payroll(models.Model):
         verbose_name = "Payroll"
         verbose_name_plural = "Payrolls"
         
-        ordering = ['-month',]  # sorting by month
+        ordering = ['-month', 'employee_id', ]  # sorting by month & employee_id
 
 
 
