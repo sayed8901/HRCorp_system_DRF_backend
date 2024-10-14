@@ -46,8 +46,6 @@ class PayrollListCreateAPIView(APIView):
 
 
 
-
-
         # Caching salary info and employment info to minimize database hits
         """
             * Salary info and employment info are cached in dictionaries (salary_info_cache and employment_info_cache). 
@@ -72,86 +70,101 @@ class PayrollListCreateAPIView(APIView):
         errors = []
 
 
-        for employee in active_employees:
-            try:
-                # Cache SalaryInfo to avoid redundant queries
-                if employee.employee_id not in _salary_info_cache:
-                    _salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
 
-                salary_info = _salary_info_cache[employee.employee_id]
+        batch_size = 50  # Limit processing to smaller chunks to prevent timeout
+
+        employee_batches = [active_employees[i:i+batch_size] for i in range(0, len(active_employees), batch_size)]
 
 
-                # Cache EmploymentInfo to avoid redundant queries
-                if employee.employee_id not in _employment_info_cache:
-                    _employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
+        for employee_batch in employee_batches:
+            for employee in employee_batch:
+                try:
+                    # Cache SalaryInfo to avoid redundant queries
+                    if employee.employee_id not in _salary_info_cache:
+                        _salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
 
-                employment_info = _employment_info_cache[employee.employee_id]
-                
-
-
-                # Creating payroll info for each employee
-                payroll = Payroll(
-                    employee = employee,
-                    status = employment_info.status, # Active status get from employment_info.status
-                    month = month_date,
+                    salary_info = _salary_info_cache[employee.employee_id]
 
 
-                    salary_grade = salary_info.salary_grade,
-                    salary_step = salary_info.salary_step,
+                    # Cache EmploymentInfo to avoid redundant queries
+                    if employee.employee_id not in _employment_info_cache:
+                        _employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
 
-                    starting_basic = salary_info.starting_basic,
-                    effective_basic = salary_info.effective_basic,
-
-                    festival_bonus = salary_info.festival_bonus or 0,
-                    other_allowance = salary_info.other_allowance or 0,
-
-                    house_rent = salary_info.house_rent,
-                    medical_allowance = salary_info.medical_allowance,
-                    conveyance = salary_info.conveyance,
-                    hardship = salary_info.hardship,
-                    pf_contribution = salary_info.pf_contribution,
-
-                    pf_deduction = salary_info.pf_deduction,
-                    swf_deduction = salary_info.swf_deduction,
-                    tax_deduction = salary_info.tax_deduction,
-
-                    gross_salary = salary_info.gross_salary,
+                    employment_info = _employment_info_cache[employee.employee_id]
+                    
 
 
-                    consolidated_salary = salary_info.consolidated_salary,
-                    is_confirmed = salary_info.is_confirmed,
-                )
-                
-                # Saving the payroll_entries
-                payroll_entries.append(payroll)
+                    # Creating payroll info for each employee
+                    payroll = Payroll(
+                        employee = employee,
+                        status = employment_info.status, # Active status get from employment_info.status
+                        month = month_date,
 
 
-            except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
-                errors.append(f"Error for employee {employee.employee_id}: {str(e)}")
+                        salary_grade = salary_info.salary_grade,
+                        salary_step = salary_info.salary_step,
 
-        if errors:
-            return Response({'errors': errors}, status=status.HTTP_404_NOT_FOUND)
-        
+                        starting_basic = salary_info.starting_basic,
+                        effective_basic = salary_info.effective_basic,
+
+                        festival_bonus = salary_info.festival_bonus or 0,
+                        other_allowance = salary_info.other_allowance or 0,
+
+                        house_rent = salary_info.house_rent,
+                        medical_allowance = salary_info.medical_allowance,
+                        conveyance = salary_info.conveyance,
+                        hardship = salary_info.hardship,
+                        pf_contribution = salary_info.pf_contribution,
+
+                        pf_deduction = salary_info.pf_deduction,
+                        swf_deduction = salary_info.swf_deduction,
+                        tax_deduction = salary_info.tax_deduction,
+
+                        gross_salary = salary_info.gross_salary,
 
 
-        # Bulk insert payroll entries
-        """
-            * Payroll entries are created in bulk using bulk_create with a batch_size=100, reducing the number of insert operations and improving performance.
-        """
-        Payroll.objects.bulk_create(payroll_entries, batch_size=100)
+                        consolidated_salary = salary_info.consolidated_salary,
+                        is_confirmed = salary_info.is_confirmed,
+                    )
+                    
+                    # Saving the payroll_entries
+                    payroll_entries.append(payroll)
 
 
-        # Calculate NPL salary deduction, late joining deduction, and net salary for each payroll in bulk       # using the methods in the payroll model
-        """
-            * Batch Payroll Calculation:
-                After all payroll records are inserted, calculations like NPL salary deduction, late joining deduction, and net salary are done in memory, reducing the number of updates to the database.
-        """
-        for payroll in payroll_entries:
-            payroll.calculate_npl_salary_deduction()
+                except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
+                    errors.append(f"Error for employee {employee.employee_id}: {str(e)}")
 
-            payroll.calculate_late_joining_deduction()
+            if errors:
+                return Response({'errors': errors}, status=status.HTTP_404_NOT_FOUND)
+            
 
-            payroll.calculate_net_salary()
+
+            # Bulk insert payroll entries
+            """
+                * Payroll entries are created in bulk using bulk_create with a batch_size=100, reducing the number of insert operations and improving performance.
+            """
+            Payroll.objects.bulk_create(payroll_entries, batch_size=100)
+
+
+            # Calculate NPL salary deduction, late joining deduction, and net salary for each payroll in bulk       # using the methods in the payroll model
+            """
+                * Batch Payroll Calculation:
+                    After all payroll records are inserted, calculations like NPL salary deduction, late joining deduction, and net salary are done in memory, reducing the number of updates to the database.
+            """
+            for payroll in payroll_entries:
+                # Calculating npl salary deduction
+                payroll.calculate_npl_salary_deduction()
+
+                # Calculating late joining deduction
+                payroll.calculate_late_joining_deduction()
+
+                # Calculating net salary
+                payroll.calculate_net_salary()
+
+
+
+            # Clear payroll_entries to avoid holding onto data
+            payroll_entries.clear()
 
 
 
@@ -213,5 +226,4 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
         
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-
 
