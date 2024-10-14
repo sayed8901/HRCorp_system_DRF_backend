@@ -71,9 +71,24 @@ class PayrollListCreateAPIView(APIView):
 
 
 
-        batch_size = 50  # Limit processing to smaller chunks to prevent timeout
+        batch_size = 10  # Limit processing to smaller chunks to prevent timeout
+        employee_batches = []  # Initialize an empty list for the batches
 
-        employee_batches = [active_employees[i:i+batch_size] for i in range(0, len(active_employees), batch_size)]
+        # Step 3: Create batches using a simple for loop
+        for i in range(0, len(active_employees), batch_size):
+            batch = active_employees[i:i + batch_size]  # Create a single batch
+            employee_batches.append(batch)  # Add the batch to the employee_batches list
+
+            # Show the result of each batch created
+            print(f"Batch {len(employee_batches)}: {batch}")
+        """
+            The above mentioned loop will be executed like:
+                Batch 1: [Employee1, Employee2, ..., Employee10]
+                Batch 2: [Employee11, Employee12, ..., Employee20]
+                Batch 3: [Employee21, Employee22, ..., Employee30]
+                ...
+        """
+
 
 
         for employee_batch in employee_batches:
