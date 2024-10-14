@@ -45,6 +45,12 @@ class PayrollListCreateAPIView(APIView):
         Payroll.objects.filter(month = month_date).delete()
 
 
+
+        # Caching salary info and employment info to minimize database hits
+        salary_info_cache = {}
+        employment_info_cache = {}
+
+
         # Filter active employees based on EmploymentInfo status
         active_employees = Employee.objects.filter(
             employmentinfo__status = 'Active'
@@ -53,10 +59,20 @@ class PayrollListCreateAPIView(APIView):
 
         for employee in active_employees:
             try:
-                salary_info = SalaryInfo.objects.get(employee = employee)
+                # Cache SalaryInfo to avoid redundant queries
+                if employee.employee_id not in salary_info_cache:
+                    salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
 
-                employment_info = EmploymentInfo.objects.get(employee = employee)
+                salary_info = salary_info_cache[employee.employee_id]
+
+
+                # Cache EmploymentInfo to avoid redundant queries
+                if employee.employee_id not in employment_info_cache:
+                    employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
+
+                employment_info = employment_info_cache[employee.employee_id]
                 
+
 
                 # Creating payroll info for each employee
                 payroll = Payroll(
@@ -91,7 +107,7 @@ class PayrollListCreateAPIView(APIView):
                     is_confirmed = salary_info.is_confirmed,
                 )
                 
-                 # Save payroll to database so that related methods can reference the instance
+                # Save payroll to database so that related methods can reference the instance
                 payroll.save()
 
                 # Now calculate NPL salary deduction and net salary using the methods in the model
@@ -107,8 +123,8 @@ class PayrollListCreateAPIView(APIView):
 
 
         # Query payroll records for the specified month
-        new_payroll_queryset = Payroll.objects.filter(month=month_date)
-        serializer = PayrollSerializer(new_payroll_queryset, many=True)
+        new_payroll_queryset = Payroll.objects.filter(month = month_date)
+        serializer = PayrollSerializer(new_payroll_queryset, many = True)
 
 
         return Response(serializer.data)
