@@ -47,13 +47,8 @@ class PayrollListCreateAPIView(APIView):
 
 
         # Caching salary info and employment info to minimize database hits
-        """
-            * Salary info and employment info are cached in dictionaries (salary_info_cache and employment_info_cache). 
-            * These caches are keyed by employee.employee_id so that for each employee, the salary and employment information are fetched only once, minimizing database queries during the payroll process.
-        """
         _salary_info_cache = {}
         _employment_info_cache = {}
-
 
 
         # Filter active employees based on EmploymentInfo status
@@ -62,128 +57,72 @@ class PayrollListCreateAPIView(APIView):
         ).select_related('employmentinfo')
 
 
+        for employee in active_employees:
+            try:
+                # Cache SalaryInfo to avoid redundant queries
+                if employee.employee_id not in _salary_info_cache:
+                    _salary_info_cache[employee.employee_id] = SalaryInfo.objects.select_related('employee').get(employee = employee)
 
-        # List to store payroll entries for bulk creation
-        payroll_entries = []
-
-        # List to store any errors encountered during processing
-        errors = []
-
-
-
-        batch_size = 10  # Limit processing to smaller chunks to prevent timeout
-        employee_batches = []  # Initialize an empty list for the batches
-
-        # Step 3: Create batches using a simple for loop
-        for i in range(0, len(active_employees), batch_size):
-            batch = active_employees[i:i + batch_size]  # Create a single batch
-            employee_batches.append(batch)  # Add the batch to the employee_batches list
-
-            # Show the result of each batch created
-            print(f"Batch {len(employee_batches)}: {batch}")
-        """
-            The above mentioned loop will be executed like:
-                Batch 1: [Employee1, Employee2, ..., Employee10]
-                Batch 2: [Employee11, Employee12, ..., Employee20]
-                Batch 3: [Employee21, Employee22, ..., Employee30]
-                ...
-        """
+                salary_info = _salary_info_cache[employee.employee_id]
 
 
+                # Cache EmploymentInfo to avoid redundant queries
+                if employee.employee_id not in _employment_info_cache:
+                    _employment_info_cache[employee.employee_id] = EmploymentInfo.objects.select_related('employee').get(employee = employee)
 
-        for employee_batch in employee_batches:
-            for employee in employee_batch:
-                try:
-                    # Cache SalaryInfo to avoid redundant queries
-                    if employee.employee_id not in _salary_info_cache:
-                        _salary_info_cache[employee.employee_id] = SalaryInfo.objects.get(employee = employee)
-
-                    salary_info = _salary_info_cache[employee.employee_id]
+                employment_info = _employment_info_cache[employee.employee_id]
+                
 
 
-                    # Cache EmploymentInfo to avoid redundant queries
-                    if employee.employee_id not in _employment_info_cache:
-                        _employment_info_cache[employee.employee_id] = EmploymentInfo.objects.get(employee = employee)
-
-                    employment_info = _employment_info_cache[employee.employee_id]
-                    
-
-
-                    # Creating payroll info for each employee
-                    payroll = Payroll(
-                        employee = employee,
-                        status = employment_info.status, # Active status get from employment_info.status
-                        month = month_date,
+                # Creating payroll info for each employee
+                payroll = Payroll(
+                    employee = employee,
+                    status = employment_info.status, # Active status get from employment_info.status
+                    month = month_date,
 
 
-                        salary_grade = salary_info.salary_grade,
-                        salary_step = salary_info.salary_step,
+                    salary_grade = salary_info.salary_grade,
+                    salary_step = salary_info.salary_step,
 
-                        starting_basic = salary_info.starting_basic,
-                        effective_basic = salary_info.effective_basic,
+                    starting_basic = salary_info.starting_basic,
+                    effective_basic = salary_info.effective_basic,
 
-                        festival_bonus = salary_info.festival_bonus or 0,
-                        other_allowance = salary_info.other_allowance or 0,
+                    festival_bonus = salary_info.festival_bonus or 0,
+                    other_allowance = salary_info.other_allowance or 0,
 
-                        house_rent = salary_info.house_rent,
-                        medical_allowance = salary_info.medical_allowance,
-                        conveyance = salary_info.conveyance,
-                        hardship = salary_info.hardship,
-                        pf_contribution = salary_info.pf_contribution,
+                    house_rent = salary_info.house_rent,
+                    medical_allowance = salary_info.medical_allowance,
+                    conveyance = salary_info.conveyance,
+                    hardship = salary_info.hardship,
+                    pf_contribution = salary_info.pf_contribution,
 
-                        pf_deduction = salary_info.pf_deduction,
-                        swf_deduction = salary_info.swf_deduction,
-                        tax_deduction = salary_info.tax_deduction,
+                    pf_deduction = salary_info.pf_deduction,
+                    swf_deduction = salary_info.swf_deduction,
+                    tax_deduction = salary_info.tax_deduction,
 
-                        gross_salary = salary_info.gross_salary,
-
-
-                        consolidated_salary = salary_info.consolidated_salary,
-                        is_confirmed = salary_info.is_confirmed,
-                    )
-                    
-                    # Saving the payroll_entries
-                    payroll_entries.append(payroll)
+                    gross_salary = salary_info.gross_salary,
 
 
-                except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
-                    errors.append(f"Error for employee {employee.employee_id}: {str(e)}")
+                    consolidated_salary = salary_info.consolidated_salary,
+                    is_confirmed = salary_info.is_confirmed,
+                )
+                
+                # Save payroll to database so that related methods can reference the instance
+                payroll.save()
 
-            if errors:
-                return Response({'errors': errors}, status=status.HTTP_404_NOT_FOUND)
-            
-
-
-            # Bulk insert payroll entries
-            """
-                * Payroll entries are created in bulk using bulk_create with a batch_size=100, reducing the number of insert operations and improving performance.
-            """
-            Payroll.objects.bulk_create(payroll_entries, batch_size=100)
-
-
-            # Calculate NPL salary deduction, late joining deduction, and net salary for each payroll in bulk       # using the methods in the payroll model
-            """
-                * Batch Payroll Calculation:
-                    After all payroll records are inserted, calculations like NPL salary deduction, late joining deduction, and net salary are done in memory, reducing the number of updates to the database.
-            """
-            for payroll in payroll_entries:
-                # Calculating npl salary deduction
+                # Now calculate NPL salary deduction and net salary using the methods in the model
                 payroll.calculate_npl_salary_deduction()
-
-                # Calculating late joining deduction
+                # also to deal with calculate_late_joining_deduction...
                 payroll.calculate_late_joining_deduction()
 
-                # Calculating net salary
                 payroll.calculate_net_salary()
 
 
-
-            # Clear payroll_entries to avoid holding onto data
-            payroll_entries.clear()
-
+            except (SalaryInfo.DoesNotExist, EmploymentInfo.DoesNotExist) as e:
+                return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
 
 
-        # Fetch new payroll records for the specified month
+        # Query payroll records for the specified month
         new_payroll_queryset = Payroll.objects.filter(month = month_date)
         serializer = PayrollSerializer(new_payroll_queryset, many = True)
 
@@ -241,4 +180,3 @@ class PayrollRetrieveUpdateDestroyAPIView(APIView):
         
         return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-

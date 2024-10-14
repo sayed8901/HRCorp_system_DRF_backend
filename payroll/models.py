@@ -61,19 +61,30 @@ class Payroll(models.Model):
 
 
 
+    # Caching salary info and employment info to minimize database hits
+    _personal_info_cache = None
+    _employment_info_cache = None
+
+
     # Retrieve the PersonalInfo for the employee.
     def get_personal_info(self):
-        try:
-            return PersonalInfo.objects.get(employee = self.employee)
-        except PersonalInfo.DoesNotExist:
-            return None
+        if self._personal_info_cache is None:  # Check cache first
+            try:
+                self._personal_info_cache = PersonalInfo.objects.select_related('employee').get(employee = self.employee)
+            except PersonalInfo.DoesNotExist:
+                self._personal_info_cache = None
+        return self._personal_info_cache
+
 
     # Retrieve the EmploymentInfo for the employee.
     def get_employment_info(self):
-        try:
-            return EmploymentInfo.objects.get(employee = self.employee)
-        except EmploymentInfo.DoesNotExist:
-            return None
+        if self._employment_info_cache is None:  # Check cache first
+            try:
+                self._employment_info_cache = EmploymentInfo.objects.select_related('employee').get(employee = self.employee)
+            except EmploymentInfo.DoesNotExist:
+                self._employment_info_cache = None
+        return self._employment_info_cache
+    
         
 
     @property
