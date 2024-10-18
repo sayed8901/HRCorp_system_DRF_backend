@@ -119,6 +119,33 @@ Only a “power_user” can:
 - Django REST Framework 3.15.2
 - PostgreSQL
 
+### Packages used:
+
+```bash
+asgiref==3.8.1
+certifi==2024.8.30
+charset-normalizer==3.3.2
+dj-database-url==2.2.0
+dj-rest-auth==6.0.0
+Django==4.2.4
+django-allauth==0.63.3
+django-cors-headers==4.4.0
+django-environ==0.11.2
+django-filter==24.3
+djangorestframework==3.15.2
+idna==3.10
+Markdown==3.7
+psycopg2-binary==2.9.9
+python-dateutil==2.9.0.post0
+requests==2.32.3
+six==1.16.0
+sqlparse==0.5.1
+typing_extensions==4.12.2
+tzdata==2024.2
+urllib3==2.2.3
+whitenoise==6.7.0
+```
+
 ---
 
 ### Installation Steps
@@ -166,29 +193,29 @@ Only a “power_user” can:
 
 8. **Environment Variables Configuration**
 
-To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
+- To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
 
-- 9. **Then, add the `SECRET_KEY` in that `.env` file:**
+9. **Then, add the `SECRET_KEY` in that `.env` file:**
 
-  - Copy the secret key from the previously created temp_settings.py file
-  - for example --> `SECRET_KEY=django-insecure--se33_ik1yp+a%bz7a.....`
+- Copy the secret key from the previously created temp_settings.py file
+- for example --> `SECRET_KEY=django-insecure--se33_ik1yp+a%bz7a.....`
 
-- 10. **Add the email sending accessibility credentials** in `.env` file:
+10. **Add the email sending accessibility credentials** in `.env` file:
 
-  - EMAIL: (Your email address for sending emails)
-  - EMAIL_PASSWORD: (Your email password or an app-specific password)
+- EMAIL: (Your email address for sending emails)
+- EMAIL_PASSWORD: (Your email password or an app-specific password)
 
-        - N.B.: please see the `### Note for: Email Setup` part for better understanding
+      - N.B.: please see the `### Note for: Email Setup` part for better understanding
 
-- 11. **Also, Add the superbase postgreeSQL database credentials** in `.env` file:
+11. **Also, Add the superbase postgreeSQL database credentials** in `.env` file:
 
-  - DB_NAME: (Your database name)
-  - DB_USER: (Your database username)
-  - DB_PASSWORD: (Your database password)
-  - DB_HOST: (The host for your database)
-  - DB_PORT: (The port for your database)
+- DB_NAME: (Your database name)
+- DB_USER: (Your database username)
+- DB_PASSWORD: (Your database password)
+- DB_HOST: (The host for your database)
+- DB_PORT: (The port for your database)
 
-        - N.B.: please see the `### Note for: Database Setup` part for better understanding
+      - N.B.: please see the `### Note for: Database Setup` part for better understanding
 
 12. **Apply migrations**
 
