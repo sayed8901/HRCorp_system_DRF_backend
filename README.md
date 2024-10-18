@@ -9,12 +9,16 @@ The backend of **HRCorp** is built using **Django** and **Django REST Framework*
 
 ---
 
+<br>
+
 ## Technology Stack
 
 - **Backend Framework**: Django, Django REST Framework
 - **Database**: PostgreSQL (with superbase deployment)
 
 ---
+
+<br>
 
 ## Project Features
 
@@ -110,6 +114,8 @@ Only a “power_user” can:
 
 ---
 
+<br>
+
 ## Instructions to Run Locally
 
 ### Prerequisites
@@ -148,6 +154,8 @@ whitenoise==6.7.0
 
 ---
 
+<br>
+
 ### Installation Steps
 
 1. Open `command prompt` in the folder directory where you want to create & run the project locally
@@ -160,13 +168,15 @@ whitenoise==6.7.0
    Scripts\activate.bat
    ```
 
-3. Temporarily **Create a new project** named `HRCorp` to get the `SECRET_KEY`
+3. **Temporarily **Create a new project** named `HRCorp` to get the `SECRET_KEY`**
 
    ```bash
    django-admin startproject HRCorp
    ```
 
-4. After creating a project named `HRCorp`,
+   <br>
+
+4. **After creating a project named `HRCorp`,**
 
 - Manually go to the project directory folder like: `...\hrcorp_env\HRCorp\HRCorp` to get the settings.py file.
 - Rename that `settings.py` file to `temp_settings.py`
@@ -176,6 +186,7 @@ whitenoise==6.7.0
 
 - Go back to the root `hrcorp_env` directory
 - Manually delete the temporarily created `HRCorp` project directory
+  <br>
 
 6. Copy the repository_url to **Clone the repository**
 
@@ -194,6 +205,7 @@ whitenoise==6.7.0
 8. **Environment Variables Configuration**
 
 - To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
+  <br>
 
 9. **Then, add the `SECRET_KEY` in that `.env` file:**
 
@@ -215,7 +227,9 @@ whitenoise==6.7.0
 - DB_HOST: (The host for your database)
 - DB_PORT: (The port for your database)
 
-      - N.B.: please see the `### Note for: Database Setup` part for better understanding
+        - N.B.: please see the `### Note for: Database Setup` part for better understanding
+
+  <br>
 
 12. **Apply migrations**
 
@@ -236,12 +250,16 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+<br>
+
 15. **Finally, Access the application**
 
 - Local: http://127.0.0.1:8000/
 - Admin Panel: http://127.0.0.1:8000/admin/
 
 ---
+
+<br>
 
 ### Note for: Database Setup
 
@@ -294,6 +312,8 @@ DB_PORT=your_db_port
 
 ---
 
+<br>
+
 ### Note for: Email Setup
 
 To set up email notifications for your Django application, follow these steps:
@@ -322,6 +342,8 @@ To set up email notifications for your Django application, follow these steps:
    ```
 
 ---
+
+<br>
 
 ## API Endpoints
 
@@ -545,6 +567,8 @@ To set up email notifications for your Django application, follow these steps:
 
 ---
 
+<br>
+
 ## Sample requests for model schemas:
 
 ### Create New Employee : POST
@@ -617,6 +641,8 @@ To set up email notifications for your Django application, follow these steps:
 ```
 
 ---
+
+<br>
 
 ## Conclusion
 
