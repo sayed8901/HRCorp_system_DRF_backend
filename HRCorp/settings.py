@@ -47,21 +47,12 @@ ALLOWED_HOSTS = ["*"]
 # manage allowing origins for accessing from our API
 CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://127.0.0.1:8000',        # Local backend
-#     'http://localhost:8000',        # Local backend
-#     'https://hr-corp-system-drf-backend.vercel.app',  # Backend on Vercel
-#     'http://localhost:5173',        # frontend's localhost
-#     'https://hrcorp.netlify.app',   # deployed frontend
-# ]
-
-
 
 # Application definition
 
 INSTALLED_APPS = [
     # whitenoise app (for vercel development only)
-    # "whitenoise.runserver_nostatic",
+    "whitenoise.runserver_nostatic",
 
     # pre defined
     'django.contrib.admin',
@@ -132,19 +123,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # whitenoise middleware (for vercel deployment only)
-    # "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 
 
-# To trust and allow CSRF token on deployment, adding our domain to CSRF_TRUSTED_ORIGINS list
+# To trust and allow CSRF token on deployment, adding our frontend domain to CSRF_TRUSTED_ORIGINS list
 CSRF_TRUSTED_ORIGINS = [
-    'https://hrcorp-system.onrender.com',       # Backend on onRender
-    'https://hr-corp-system-drf-backend.vercel.app',    # Backend on Vercel
     'https://hrcorp.netlify.app',   # deployed frontend
     'http://localhost:5173',        # frontend's localhost
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
 ]
 
 
@@ -297,3 +284,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env("EMAIL")
 EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
+
+
+

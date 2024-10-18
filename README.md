@@ -249,10 +249,10 @@ Only a “power_user” can:
 
 ### Prerequisites
 
-- Python 3.x
-- Django 4.x
-- Django REST Framework 3.x
-- SQLite3 (or PostgreSQL for production)
+- Python 3.12.2
+- Django 4.2.4
+- Django REST Framework 3.15.2
+- PostgreSQL
 
 ### Installation Steps
 
@@ -266,8 +266,9 @@ Only a “power_user” can:
 2. **Create a virtual environment**
 
    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    python -m venv django_env
+    cd django_env
+    Scripts\activate.bat
    ```
 
 3. **Install dependencies**
@@ -279,6 +280,7 @@ Only a “power_user” can:
 4. **Apply migrations**
 
    ```bash
+    python manage.py makemigrations
     python manage.py migrate
    ```
 
@@ -290,8 +292,17 @@ Only a “power_user” can:
 
 6. **Access the application**
 
-   Local: http://127.0.0.1:8000/
-   Admin Panel: http://127.0.0.1:8000/admin/
+   * Local: http://127.0.0.1:8000/
+   * Admin Panel: http://127.0.0.1:8000/admin/
+
+
+7. **Creating superuser**
+
+   ```bash
+    python manage.py createsuperuser
+   ```
+
+---
 
 ### Database Setup
 
@@ -326,6 +337,8 @@ The project is configured to use SQLite3 by default, but it can be switched to P
     python manage.py runserver
    ```
 
+---
+
 ## Environment Variables Configuration
 
 To run the application, you need to configure environment variables. Create a file named .env in the root directory of your project and add the following:
@@ -342,6 +355,9 @@ To run the application, you need to configure environment variables. Create a fi
 - DB_PORT: The port for your database.
 
 Important: Ensure that you do not share this file or commit it to version control to protect sensitive information.
+
+
+---
 
 ## API Endpoints
 
@@ -449,6 +465,11 @@ Important: Ensure that you do not share this file or commit it to version contro
   `GET`/`PUT`/`DELETE` - `/payroll/payroll/<id>/`  
   Retrieves, updates, or deletes a payroll record by its ID.
 
+
+
+---
+
+
 ## Sample requests for model schemas:
 
 ### Create New Employee : POST
@@ -508,3 +529,5 @@ Important: Ensure that you do not share this file or commit it to version contro
 "leave_start_date": "2024-09-11",
 "leave_end_date": "2024-09-13"
 }
+
+
