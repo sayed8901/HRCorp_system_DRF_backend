@@ -110,141 +110,6 @@ Only a “power_user” can:
 
 ---
 
-## API Endpoints
-
-### User Management
-
-- **Register Power User**  
-  `POST /power_user/register/`
-
-- **Register Standard User**  
-  `POST /standard_user/register/`
-
-- **Login**  
-  `POST /accounts/login/`
-
-- **Logout**  
-  `GET /accounts/logout/`
-
-- **Get User Account Data**  
-  `GET /accounts/user/?user_id=<id>`
-
-- **Get Power User Data by User ID**  
-  `GET /power_user/by_user_id/?user_id=<id>`
-
-- **Get Standard User Data by User ID**  
-  `GET /standard_user/by_user_id/?user_id=<id>`
-
----
-
-### Employee Management
-
-- **Create New Employee**  
-  `POST /employee/list/`
-
-- **Get All Employees**  
-  `GET /employee/list/`
-
-- **Get Employee by ID**  
-  `GET /employee/list/<employee_id>/`
-
-- **Delete Employee** (only by power user)  
-  `DELETE /employee/list/<employee_id>/`
-
-- **Update Employee Personal Info**  
-  `GET /employment/personal_info/?employee_id=<id>`  
-  `PUT /employment/personal_info/?employee_id=<id>`
-
-- **Update Employee Employment Info**  
-  `GET /employment/employment_info/?employee_id=<id>`  
-  `PUT /employment/employment_info/?employee_id=<id>`
-
-- **Update Employee Salary Info**  
-  `GET /salary/salary_info/?employee_id=<id>`  
-  `PUT /salary/salary_info/?employee_id=<id>`
-
----
-
-### Job Profile Management
-
-- **Get Job Profile History by Employee ID**  
-  `GET /job_profile_history/?employee_id=<id>`
-
-- **Get All Employee Job Profiles**  
-  `GET /job_profile_history/list/`
-
----
-
-### Transfer Management
-
-- **Get All Transfers**  
-  `GET /transfer/list/`
-
-- **Get Transfer by Employee ID**  
-  `GET /transfer/?employee_id=<id>`
-
-- **Update Transfer Info by Transfer ID** (only by power user)  
-  `PUT /transfer/update/?transfer_id=<id>`
-
-- **Cancel Transfer by Transfer ID** (only by power user)  
-  `DELETE /transfer/cancel/?transfer_id=<id>`
-
----
-
-### Promotion and Confirmation Management
-
-- **Make Job Confirmation**  
-  `POST /confirmation/confirm/?employee_id=<id>`
-
-- **Get All Job Confirmations**  
-  `GET /confirmation/list/`
-
-- **Make Promotion**  
-  `POST /promotion/promote/?employee_id=<id>`
-
-- **Get All Promotions**  
-  `GET /promotion/list/`
-
----
-
-### Separation Management
-
-- **Make Separation**  
-  `POST /separation/deactivate/?employee_id=<id>`
-
-- **Get All Separations**  
-  `GET /separation/list/`
-
----
-
-### Leave Management
-
-- **Get All Leave Records**  
-  `GET /leave/list/`
-
-- **Get Individual Leave Record by Employee ID**  
-  `GET /leave/?employee_id=<id>`
-
-- **Update Leave Record by Leave ID** (only by power user)  
-  `PUT /leave/update/?leave_id=<id>`
-
-- **Cancel Leave Record by Leave ID** (only by power user)  
-  `DELETE /leave/cancel/?leave_id=<id>`
-
----
-
-### Payroll Management
-
-- **Process Payroll for a Specific Month**  
-  `GET /payroll/process_payroll/?month=<YYYY-MM>`
-
-- **Get Payroll Info by Payroll ID**  
-  `GET /payroll/payroll/<payroll_id>/`  
-  `PUT /payroll/payroll/<payroll_id>/`  
-  `DELETE /payroll/payroll/<payroll_id>/`
-
----
-
 ## Instructions to Run Locally
 
 ### Prerequisites
@@ -292,9 +157,8 @@ Only a “power_user” can:
 
 6. **Access the application**
 
-   * Local: http://127.0.0.1:8000/
-   * Admin Panel: http://127.0.0.1:8000/admin/
-
+   - Local: http://127.0.0.1:8000/
+   - Admin Panel: http://127.0.0.1:8000/admin/
 
 7. **Creating superuser**
 
@@ -356,7 +220,6 @@ To run the application, you need to configure environment variables. Create a fi
 
 Important: Ensure that you do not share this file or commit it to version control to protect sensitive information.
 
-
 ---
 
 ## API Endpoints
@@ -383,25 +246,33 @@ Important: Ensure that you do not share this file or commit it to version contro
   `GET` - `/accounts/user/?user_id=<id>`  
   Retrieves the account details of a user by their ID.
 
-### Power User Features
+- **Get Power User by User ID**:  
+  `GET` - `/power_user/by_user_id/?user_id=<id>`  
+  Retrieves a Power User's data by user ID.
+
+- **Get Standard User by User ID**:  
+  `GET` - `/standard_user/by_user_id/?user_id=<id>`  
+  Retrieves a Standard User's data by user ID.
+
+### Power User Management
 
 - **List Power Users**:  
   `GET` - `/power_user/list/`  
   Returns a list of all Power Users.
 
 - **Update/Delete Power User by ID**:  
-  `PUT`/`PATCH`/`DELETE` - `/power_user/list/<id>/`  
-  Allows updating or deleting a Power User by their ID.
+  `GET`/`PUT`/`PATCH`/`DELETE` - `/power_user/list/<id>/`  
+  Allows retrieving, updating, or deleting a Power User by their ID.
 
-### Standard User Features
+### Standard User Management
 
 - **List Standard Users**:  
   `GET` - `/standard_user/list/`  
   Returns a list of all Standard Users.
 
 - **Update/Delete Standard User by ID**:  
-  `PUT`/`PATCH`/`DELETE` - `/standard_user/list/<id>/`  
-  Allows updating or deleting a Standard User by their ID.
+  `GET`/`PUT`/`PATCH`/`DELETE` - `/standard_user/list/<id>/`  
+  Allows retrieving, updating, or deleting a Standard User by their ID.
 
 ### Employee Management
 
@@ -411,7 +282,7 @@ Important: Ensure that you do not share this file or commit it to version contro
 
 - **Create Employee**:  
   `POST` - `/employee/list/`  
-  Allows the creation of a new employee.
+  Allows creating a new employee.
 
 - **Get Full Info of All Employees**:  
   `GET` - `/employee/all-info/`  
@@ -421,54 +292,157 @@ Important: Ensure that you do not share this file or commit it to version contro
   `DELETE` - `/employee/list/<id>/`  
   Deletes an employee by their ID.
 
-### Department, Designation & Job Location Management
+### Department Management (Power User Only)
 
 - **Create Department**:  
   `POST` - `/employment/departments/`  
-  Creates a new department.
+  Allows a Power User to create a department.
 
-- **Update/Delete Department by ID**:  
-  `PUT`/`PATCH`/`DELETE` - `/employment/departments/<id>/`  
-  Updates or deletes a department by its ID.
+- **Retrieve/Update/Delete Department by ID**:  
+  `GET`/`PUT`/`PATCH`/`DELETE` - `/employment/departments/<id>/`  
+  Allows retrieving, updating, or deleting a department by its ID.
+
+### Designation Management (Power User Only)
 
 - **Create Designation**:  
   `POST` - `/employment/designations/`  
-  Creates a new designation.
+  Allows a Power User to create a designation.
 
-- **Update/Delete Designation by ID**:  
-  `PUT`/`PATCH`/`DELETE` - `/employment/designations/<id>/`  
-  Updates or deletes a designation by its ID.
+- **Retrieve/Update/Delete Designation by ID**:  
+  `GET`/`PUT`/`PATCH`/`DELETE` - `/employment/designations/<id>/`  
+  Allows retrieving, updating, or deleting a designation by its ID.
+
+### Job Location Management (Power User Only)
 
 - **Create Job Location**:  
   `POST` - `/employment/job_locations/`  
-  Creates a new job location.
+  Allows a Power User to create a job location.
 
-- **Update/Delete Job Location by ID**:  
-  `PUT`/`PATCH`/`DELETE` - `/employment/job_locations/<id>/`  
-  Updates or deletes a job location by its ID.
+- **Retrieve/Update/Delete Job Location by ID**:  
+  `GET`/`PUT`/`PATCH`/`DELETE` - `/employment/job_locations/<id>/`  
+  Allows retrieving, updating, or deleting a job location by its ID.
 
-### Salary & Payroll Management
+### Employee Personal Information
+
+- **List All Personal Info**:  
+  `GET` - `/employment/personal_info/list/`  
+  Returns a list of all personal information.
+
+- **Get/Update Employee Personal Info by Employee ID**:  
+  `GET`/`PUT` - `/employment/personal_info/?employee_id=<id>`  
+  Retrieves or updates the personal info of an employee by their employee ID.
+
+### Employee Employment Information
+
+- **List All Employment Info**:  
+  `GET` - `/employment/employment_info/list/`  
+  Returns a list of all employment information.
+
+- **Get/Update Employee Employment Info by Employee ID**:  
+  `GET`/`PUT` - `/employment/employment_info/?employee_id=<id>`  
+  Retrieves or updates the employment info of an employee by their employee ID.
+
+### Salary Information
 
 - **List All Salary Info**:  
   `GET` - `/salary/salary_info/list/`  
-  Retrieves a list of all salary information records.
+  Returns a list of all salary information.
 
-- **Get Salary Info by Employee ID**:  
-  `GET` - `/salary/salary_info/?employee_id=<id>`  
-  Returns salary information for a specific employee by their ID.
+- **Get/Update Employee Salary Info by Employee ID**:  
+  `GET`/`PUT` - `/salary/salary_info/?employee_id=<id>`  
+  Retrieves or updates the salary info of an employee by their employee ID.
+
+### Job Profile History
+
+- **Get Employee Job Profile History by Employee ID**:  
+  `GET` - `/job_profile_history/?employee_id=<id>`  
+  Retrieves the job profile history of an employee by their employee ID.
+
+- **List All Job Profile Histories**:  
+  `GET` - `/job_profile_history/list/`  
+  Returns a list of all employee job profile histories.
+
+### Employee Transfer
+
+- **List All Employee Transfers**:  
+  `GET` - `/transfer/list/`  
+  Returns a list of all employee transfers.
+
+- **Get/Create Employee Transfer by Employee ID**:  
+  `GET`/`POST` - `/transfer/?employee_id=<id>`  
+  Retrieves or creates a transfer record for an employee by their employee ID.
+
+- **Update Employee Transfer by Transfer ID (Power User Only)**:  
+  `PUT` - `/transfer/update/?transfer_id=<id>`  
+  Updates the transfer info of an employee by the transfer ID.
+
+- **Delete Employee Transfer by Transfer ID (Power User Only)**:  
+  `DELETE` - `/transfer/cancel/?transfer_id=<id>`  
+  Deletes an employee's last transfer record by the transfer ID.
+
+### Job Confirmation
+
+- **Confirm Employee Job**:  
+  `POST` - `/confirmation/confirm/?employee_id=<id>`  
+  Confirms the job of an employee by their employee ID.
+
+- **List All Job Confirmations**:  
+  `GET` - `/confirmation/list/`  
+  Returns a list of all job confirmations.
+
+### Employee Promotion
+
+- **Promote Employee**:  
+  `POST` - `/promotion/promote/?employee_id=<id>`  
+  Promotes an employee by their employee ID.
+
+- **Get All Promotions of an Employee**:  
+  `GET` - `/promotion/promote/?employee_id=<id>`  
+  Retrieves all promotion records of an employee by their employee ID.
+
+- **List All Promotions**:  
+  `GET` - `/promotion/list/`  
+  Returns a list of all promotions.
+
+### Employee Separation
+
+- **Separate an Employee**:  
+  `POST` - `/separation/deactivate/?employee_id=<id>`  
+  Deactivates (separates) an employee by their employee ID.
+
+- **List All Separations**:  
+  `GET` - `/separation/list/`  
+  Returns a list of all employee separations.
+
+### Employee Leave Management
+
+- **List All Employee Leave Info**:  
+  `GET` - `/leave/list/`  
+  Returns a list of all employee leave records.
+
+- **Get/Create Employee Leave by Employee ID**:  
+  `GET`/`POST` - `/leave/?employee_id=<id>`  
+  Retrieves or creates a leave record for an employee by their employee ID.
+
+- **Update Employee Leave by Leave ID (Power User Only)**:  
+  `PUT` - `/leave/update/?leave_id=<id>`  
+  Updates a leave record for an employee by the leave ID.
+
+- **Delete Employee Leave by Leave ID (Power User Only)**:  
+  `DELETE` - `/leave/cancel/?leave_id=<id>`  
+  Deletes a leave record for an employee by the leave ID.
+
+### Payroll Processing
 
 - **Process Payroll for a Particular Month**:  
   `GET` - `/payroll/process_payroll/?month=<YYYY-MM>`  
-  Generates payroll for the specified month.
+  Processes payroll for all employees for the specified month.
 
-- **Get/Update/Delete Payroll by ID**:  
+- **Get/Update/Delete Employee Payroll by Payroll ID (Power User Only)**:  
   `GET`/`PUT`/`DELETE` - `/payroll/payroll/<id>/`  
-  Retrieves, updates, or deletes a payroll record by its ID.
-
-
+  Retrieves, updates, or deletes a payroll record for an employee by the payroll ID.
 
 ---
-
 
 ## Sample requests for model schemas:
 
@@ -529,5 +503,3 @@ Important: Ensure that you do not share this file or commit it to version contro
 "leave_start_date": "2024-09-11",
 "leave_end_date": "2024-09-13"
 }
-
-
