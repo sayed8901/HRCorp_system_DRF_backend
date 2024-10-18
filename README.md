@@ -119,106 +119,180 @@ Only a “power_user” can:
 - Django REST Framework 3.15.2
 - PostgreSQL
 
+---
+
 ### Installation Steps
 
-1. **Clone the repository**
-
-   ```bash
-    git clone <repository_url>
-    cd HRCorp_HR_ERP_project
-   ```
+1. Open `command prompt` in the folder directory where you want to create & run the project locally
 
 2. **Create a virtual environment**
 
    ```bash
-    python -m venv django_env
-    cd django_env
-    Scripts\activate.bat
+   python -m venv hrcorp_env
+   cd hrcorp_env
+   Scripts\activate.bat
    ```
 
-3. **Install dependencies**
+3. Temporarily **Create a new project** named `HRCorp` to get the `SECRET_KEY`
 
    ```bash
+   django-admin startproject HRCorp
+   ```
+
+4. After creating a project named `HRCorp`,
+
+- Manually go to the project directory folder like: `...\hrcorp_env\HRCorp\HRCorp` to get the settings.py file.
+- Rename that `settings.py` file to `temp_settings.py`
+- Copy that `temp_settings.py` file and paste it to a temporary folder directory or in the root `hrcorp_env` directory
+
+5. **Delete the project** created temporarily
+
+- Go back to the root `hrcorp_env` directory
+- Manually delete the temporarily created `HRCorp` project directory
+
+6. Copy the repository_url to **Clone the repository**
+
+   ```bash
+   git clone <repository_url>
+   ```
+
+7. **Install dependencies**
+
+   ```bash
+   cd HRCorp_system_DRF_backend
    pip install -r requirements.txt
+   code .
    ```
 
-4. **Apply migrations**
+8. **Environment Variables Configuration**
 
-   ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-   ```
+To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
 
-5. **Run the development server**
+- 9. **Then, add the `SECRET_KEY` in that `.env` file:**
 
-   ```bash
-    python manage.py runserver
-   ```
+  - Copy the secret key from the previously created temp_settings.py file
+  - for example --> `SECRET_KEY=django-insecure--se33_ik1yp+a%bz7a.....`
 
-6. **Access the application**
+- 10. **Add the email sending accessibility credentials** in `.env` file:
 
-   - Local: http://127.0.0.1:8000/
-   - Admin Panel: http://127.0.0.1:8000/admin/
+  - EMAIL: (Your email address for sending emails)
+  - EMAIL_PASSWORD: (Your email password or an app-specific password)
 
-7. **Creating superuser**
+        - N.B.: please see the `### Note for: Email Setup` part for better understanding
 
-   ```bash
-    python manage.py createsuperuser
-   ```
+- 11. **Also, Add the superbase postgreeSQL database credentials** in `.env` file:
+
+  - DB_NAME: (Your database name)
+  - DB_USER: (Your database username)
+  - DB_PASSWORD: (Your database password)
+  - DB_HOST: (The host for your database)
+  - DB_PORT: (The port for your database)
+
+        - N.B.: please see the `### Note for: Database Setup` part for better understanding
+
+12. **Apply migrations**
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+13. **Creating superuser**
+
+```bash
+python manage.py createsuperuser
+```
+
+14. **Run the development server**
+
+```bash
+python manage.py runserver
+```
+
+15. **Finally, Access the application**
+
+- Local: http://127.0.0.1:8000/
+- Admin Panel: http://127.0.0.1:8000/admin/
 
 ---
 
-### Database Setup
+### Note for: Database Setup
 
-The project is configured to use SQLite3 by default, but it can be switched to PostgreSQL. For PostgreSQL:
+1. **Setting up in Supabase:**
 
-1. Install PostgreSQL and set up a database.
+- Go to `supabase.com` and log in with your `GitHub` account.
+- Navigate to the dashboard and click on **New project**.
+  - Select your organization (e.g., `sayed8901’s Org`).
+  - Provide a relevant project name (e.g., `hr_corp-db`).
+  - Set a strong database password (consider using a password generator) and make sure to copy it, as you will need it later.
+  - Choose the **Region** as **South Asia (Singapore)** and click **Create new project**.
 
-2. **Update the DATABASES setting in settings.py:**
+2. **Updating settings.py:**
 
-   ```bash
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': '<your_db_name>',
-            'USER': '<your_db_user>',
-            'PASSWORD': '<your_db_password>',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
+- Make sure to replace the default SQLite database settings with PostgreSQL settings in your `settings.py` file:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT"),
     }
-   ```
+}
+```
 
-3. **Run migrations**
+3. **Update the .env file:**
 
-   ```bash
-    python manage.py migrate
-   ```
+- In your .env file, replace/update the values for `DB_NAME`, `DB_USER`, `DB_HOST`, and `DB_PORT` based on your Supabase database configuration.
+- You should also set `DB_PASSWORD` with the password you generated earlier.
 
-4. **Run the development server**
+```python
+DB_NAME=postgres
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_HOST=your_db_host
+DB_PORT=your_db_port
+```
 
-   ```bash
-    python manage.py runserver
-   ```
+**To find the required database connection details in Supabase:**
+
+- Go to the `Supabase dashboard` and select your project.
+- Choose the `database` option from the left sidebar.
+- Alternatively, you can select the `connect` button from the top-right corner.
+- Select the `Python` tab from the `Connection string`
+- and go to `Connection parameters` for your database details.
 
 ---
 
-## Environment Variables Configuration
+### Note for: Email Setup
 
-To run the application, you need to configure environment variables. Create a file named .env in the root directory of your project and add the following:
+To set up email notifications for your Django application, follow these steps:
 
-- SECRET_KEY: A unique key for cryptographic signing.
+1. **Getting App Password**:
 
-- EMAIL: Your email address for sending emails.
-- EMAIL_PASSWORD: Your email password or an app-specific password.
+   - Log in to your `Google` account.
+   - Click on your account profile image and select **Manage your Google Account**.
+   - Navigate to the **Security** tab.
+   - Enable **2-Step Verification** if it is not already enabled.
+   - After enabling, scroll down and click on **App passwords**.
+   - Provide an app name (e.g., `hrcorp`) and click **Create**. A `password` will be generated; copy this password;
+   - paste this `password` onto the `EMAIL_PASSWORD` field in the `.env` file.
 
-- DB_NAME: Your database name.
-- DB_USER: Your database username.
-- DB_PASSWORD: Your database password.
-- DB_HOST: The host for your database.
-- DB_PORT: The port for your database.
+2. **Updating project settings.py**:
 
-Important: Ensure that you do not share this file or commit it to version control to protect sensitive information.
+   - In your `settings.py` file, make sure to set up the email configuration as follows:
+
+   ```python
+   EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+   EMAIL_HOST = 'smtp.gmail.com'
+   EMAIL_USE_TLS = True
+   EMAIL_PORT = 587
+   EMAIL_HOST_USER = env("EMAIL")
+   EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
+   ```
 
 ---
 
@@ -486,33 +560,33 @@ Important: Ensure that you do not share this file or commit it to version contro
 ### Employment_info : PUT
 
 ```bash
- {
- "status": "Active",
- "joining_date": "2024-08-01",
- "probation_period_months": 1
- }
+{
+  "status": "Active",
+  "joining_date": "2024-08-01",
+  "probation_period_months": 1
+}
 ```
 
 ### Create transfer info : POST, PUT
 
 ```bash
- {
- "transfer_from_location": "Head Office",
- "transfer_from_department": "HR & Admin",
- "transfer_to_location": "Branch-002",
- "transfer_to_department": "Sales",
- "transfer_effective_date": "2024-08-28"
- }
+{
+  "transfer_from_location": "Head Office",
+  "transfer_from_department": "HR & Admin",
+  "transfer_to_location": "Branch-002",
+  "transfer_to_department": "Sales",
+  "transfer_effective_date": "2024-08-28"
+}
 ```
 
 ### Create leave info : POST, PUT
 
 ```bash
- {
- "leave_type": "Non_Paid_Leave",
- "leave_start_date": "2024-09-11",
- "leave_end_date": "2024-09-13"
- }
+{
+  "leave_type": "Non_Paid_Leave",
+  "leave_start_date": "2024-09-11",
+  "leave_end_date": "2024-09-13"
+}
 ```
 
 ---
