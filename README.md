@@ -274,24 +274,6 @@ Important: Ensure that you do not share this file or commit it to version contro
   `GET`/`PUT`/`PATCH`/`DELETE` - `/standard_user/list/<id>/`  
   Allows retrieving, updating, or deleting a Standard User by their ID.
 
-### Employee Management
-
-- **List Employees**:  
-  `GET` - `/employee/list/`  
-  Returns a list of all employees.
-
-- **Create Employee**:  
-  `POST` - `/employee/list/`  
-  Allows creating a new employee.
-
-- **Get Full Info of All Employees**:  
-  `GET` - `/employee/all-info/`  
-  Retrieves comprehensive information for all employees.
-
-- **Delete Employee by ID**:  
-  `DELETE` - `/employee/list/<id>/`  
-  Deletes an employee by their ID.
-
 ### Department Management (Power User Only)
 
 - **Create Department**:  
@@ -321,6 +303,24 @@ Important: Ensure that you do not share this file or commit it to version contro
 - **Retrieve/Update/Delete Job Location by ID**:  
   `GET`/`PUT`/`PATCH`/`DELETE` - `/employment/job_locations/<id>/`  
   Allows retrieving, updating, or deleting a job location by its ID.
+
+### Employee Management
+
+- **List Employees**:  
+  `GET` - `/employee/list/`  
+  Returns a list of all employees.
+
+- **Create Employee**:  
+  `POST` - `/employee/list/`  
+  Allows creating a new employee.
+
+- **Get Full Info of All Employees**:  
+  `GET` - `/employee/all-info/`  
+  Retrieves comprehensive information for all employees.
+
+- **Delete Employee by ID** (Power User Only):  
+  `DELETE` - `/employee/list/<id>/`  
+  Deletes an employee by their ID.
 
 ### Employee Personal Information
 
@@ -448,58 +448,77 @@ Important: Ensure that you do not share this file or commit it to version contro
 
 ### Create New Employee : POST
 
-{
-"personal_info_data": {
-"name": "Md. Sayed Hossain",
-"gender": "Male",
-"father_name": "Md. Habibur Rahman",
-"mother_name": "Hasina Begum",
-"marital_status": "Single",
-"spouse_name": "",  
- "permanent_address": "Uzirpur, Barishal",
-"present_address": "Sastapur, Fatullah, Narayanganj",
-"date_of_birth": "1992-04-12",
-"smart_id": "123",
-"contact_number": "01915158901",
-"email": "sayed91515@gmail.com",
-"educational_degree": "MBA",
-"blood_group": "AB+",
-},
-"employment_info_data": {
-"joining_date": "2024-09-01",
-"probation_period_months": 1,
-"job_location": "Zone-1",
-"department": "Finance & Accounts",
-"designation": "Officer",
-},
-"salary_info_data": {
-"salary_grade": 8,
-"salary_step": 3,
-}
-}
+```bash
+ {
+     "personal_info_data":
+     {
+         "name": "Md. Sayed Hossain",
+         "gender": "Male",
+         "father_name": "Md. Habibur Rahman",
+         "mother_name": "Hasina Begum",
+         "marital_status": "Single",
+         "spouse_name": "",
+         "permanent_address": "Uzirpur, Barishal",
+         "present_address": "Sastapur, Fatullah, Narayanganj",
+         "date_of_birth": "1992-04-12",
+         "smart_id": "123",
+         "contact_number": "01915158901",
+         "email": "sayed91515@gmail.com",
+         "educational_degree": "MBA",
+         "blood_group": "AB+"
+     },
+     "employment_info_data":
+     {
+         "joining_date": "2024-09-01",
+         "probation_period_months": 1,
+         "job_location": "Zone-1",
+         "department": "Finance & Accounts",
+         "designation": "Officer"
+     },
+     "salary_info_data":
+     {
+         "salary_grade": 8,
+         "salary_step": 3
+     }
+ }
+```
 
 ### Employment_info : PUT
 
-{
-"status": "Active",
-"joining_date": "2024-08-01",
-"probation_period_months": 1
-}
+```bash
+ {
+ "status": "Active",
+ "joining_date": "2024-08-01",
+ "probation_period_months": 1
+ }
+```
 
 ### Create transfer info : POST, PUT
 
-{
-"transfer_from_location": "Head Office",
-"transfer_from_department": "HR & Admin",
-"transfer_to_location": "Branch-002",
-"transfer_to_department": "Sales",
-"transfer_effective_date": "2024-08-28"
-}
+```bash
+ {
+ "transfer_from_location": "Head Office",
+ "transfer_from_department": "HR & Admin",
+ "transfer_to_location": "Branch-002",
+ "transfer_to_department": "Sales",
+ "transfer_effective_date": "2024-08-28"
+ }
+```
 
 ### Create leave info : POST, PUT
 
-{
-"leave_type": "Non_Paid_Leave",
-"leave_start_date": "2024-09-11",
-"leave_end_date": "2024-09-13"
-}
+```bash
+ {
+ "leave_type": "Non_Paid_Leave",
+ "leave_start_date": "2024-09-11",
+ "leave_end_date": "2024-09-13"
+ }
+```
+
+---
+
+## Conclusion
+
+In developing the **HRCorp** backend, I aimed to create a comprehensive solution for efficient HR management. Using Django and PostgreSQL, I built a scalable and secure platform that supports user management, employee tracking, and payroll processing.
+
+I believe the features included will significantly enhance HR operations, and I'm excited for organizations to benefit from this tool. If you have questions or want to contribute, feel free to reach out!
