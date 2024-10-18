@@ -186,7 +186,8 @@ whitenoise==6.7.0
 
 - Go back to the root `hrcorp_env` directory
 - Manually delete the temporarily created `HRCorp` project directory
-  <br>
+
+<br>
 
 6. Copy the repository_url to **Clone the repository**
 
@@ -202,10 +203,11 @@ whitenoise==6.7.0
    code .
    ```
 
+<br>
+
 8. **Environment Variables Configuration**
 
 - To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
-  <br>
 
 9. **Then, add the `SECRET_KEY` in that `.env` file:**
 
@@ -219,6 +221,8 @@ whitenoise==6.7.0
 
       - N.B.: please see the `### Note for: Email Setup` part for better understanding
 
+<br>
+
 11. **Also, Add the superbase postgreeSQL database credentials** in `.env` file:
 
 - DB_NAME: (Your database name)
@@ -229,7 +233,7 @@ whitenoise==6.7.0
 
         - N.B.: please see the `### Note for: Database Setup` part for better understanding
 
-  <br>
+<br>
 
 12. **Apply migrations**
 
@@ -261,7 +265,7 @@ python manage.py runserver
 
 <br>
 
-### Note for: Database Setup
+## Note for: Database Setup
 
 1. **Setting up in Supabase:**
 
@@ -314,7 +318,7 @@ DB_PORT=your_db_port
 
 <br>
 
-### Note for: Email Setup
+## Note for: Email Setup
 
 To set up email notifications for your Django application, follow these steps:
 
