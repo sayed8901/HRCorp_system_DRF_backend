@@ -1,8 +1,9 @@
 .venv
 
+hrcorp_env
+
 HRCorp/.env
 
 db.sqlite3
 
 __pycache__/
-
