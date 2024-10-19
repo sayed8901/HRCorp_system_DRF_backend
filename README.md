@@ -189,10 +189,10 @@ whitenoise==6.7.0
 
 <br>
 
-6. Copy the repository_url to **Clone the repository**
+6. Copy the `repository_url` to **Clone the repository**
 
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/sayed8901/HRCorp_system_DRF_backend.git
    ```
 
 7. **Install dependencies**
