@@ -193,26 +193,19 @@ whitenoise==6.7.0
 
 - `N.B.`: To run the application, you need to configure environment variables. Create a file named `.env` inside the root project directory of your project named `HRCorp`.
 
+<br>
+
 6. **Then, add the `SECRET_KEY` in that `.env` file:**
 
 - SECRET_KEY=(Your SECRET_KEY)
 
-      - N.B.: please see the `### Note for: Getting the SECRET_KEY` part for better understanding
+      --> N.B.: please see the `### Note for: Getting the SECRET_KEY` part for better understanding
 
 - Copy the `secret key` from the temporarily created project's `temp_settings.py` file
 
 <br>
 
-7. **Add the email sending accessibility credentials** in `.env` file:
-
-- EMAIL=(Your email address for sending emails)
-- EMAIL_PASSWORD=(Your email password or an app-specific password)
-
-      - N.B.: please see the `### Note for: Email Setup` part for better understanding
-
-<br>
-
-8. **Also, Add the Supabase postgreeSQL database credentials** in `.env` file:
+7. **Add the Supabase postgreeSQL database credentials** in `.env` file:
 
 - DB_NAME=(Your database name)
 - DB_USER=(Your database username)
@@ -220,7 +213,16 @@ whitenoise==6.7.0
 - DB_HOST=(The host for your database)
 - DB_PORT=(The port for your database)
 
-        - N.B.: please see the `### Note for: Database Setup` part for better understanding
+        --> N.B.: please see the `### Note for: Database Setup` part for better understanding
+
+<br>
+
+8. **Also, Add the email sending accessibility credentials** in `.env` file:
+
+- EMAIL=(Your email address for sending emails)
+- EMAIL_PASSWORD=(Your email password or an app-specific password)
+
+      --> N.B.: please see the `### Note for: Email Setup` part for better understanding
 
 <br>
 
@@ -262,7 +264,7 @@ python manage.py runserver
    django-admin startproject temp_HRCorp
    ```
 
-2. **After creating a project named `temp_HRCorp`,**
+1. **After creating a project named `temp_HRCorp`,**
 
 - Manually go to that `temp_HRCorp` project directory folder to get the `settings.py` file.
 - Rename that `settings.py` file to `temp_settings.py`
