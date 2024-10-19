@@ -256,7 +256,7 @@ python manage.py runserver
 
 <br>
 
-13. ## Note for: Getting the `SECRET_KEY`
+## 13. Note for: Getting the `SECRET_KEY`
 
 1. **to get the `SECRET_KEY`, Temporarily `Create a new project` named `temp_HRCorp` anywhere `outside the current project directory` (may be in the `desktop`, `documents` or `downloads`, wherever you want, just outside the current project directory)**
 
@@ -279,7 +279,7 @@ python manage.py runserver
 
 <br>
 
-14. ## Note for: Database Setup
+## 14. Note for: Database Setup
 
 1. **Setting up in Supabase:**
 
@@ -332,7 +332,7 @@ DB_PORT=your_db_port
 
 <br>
 
-15. ## Note for: Email Setup
+## 15. Note for: Email Setup
 
 To set up email notifications for your Django application, follow these steps:
 
