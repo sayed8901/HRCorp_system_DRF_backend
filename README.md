@@ -213,7 +213,7 @@ whitenoise==6.7.0
 - DB_HOST=(The host for your database)
 - DB_PORT=(The port for your database)
 
-        --> N.B.: please see the `### Note for: Database Setup` part for better understanding
+      --> N.B.: please see the `### Note for: Database Setup` part for better understanding
 
 <br>
 
