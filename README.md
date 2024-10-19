@@ -5,7 +5,11 @@
 **Project Type**: HR software  
 **Project Name**: HRCorp
 
-The backend of **HRCorp** is built using **Django** and **Django REST Framework** (DRF) to manage HR functionalities such as employee records, payroll, transfers, promotions, and more. The system allows multiple user management, where users are divided into `power_user` (admin) and `standard_user` (normal user). Power users have extended privileges to manage employee data and HR functionalities. The project uses PostgreSQL as the database.
+## Overview
+
+The backend of **HRCorp** is built using **Django** and **Django REST Framework** (DRF) to manage HR functionalities such as employee records, payroll, transfers, promotions, and more. The system allows multiple user management, where users are divided into `power_user` (admin) and `standard_user` (normal user).
+
+Power users have extended privileges to manage employee data and HR functionalities. The project uses PostgreSQL as the database.
 
 ---
 
@@ -267,9 +271,9 @@ python manage.py runserver
 
 ## Note for: Database Setup
 
-1. **Setting up in Supabase:**
+1. **Setting up in Superbase:**
 
-- Go to `supabase.com` and log in with your `GitHub` account.
+- Go to `superbase.com` and log in with your `GitHub` account.
 - Navigate to the dashboard and click on **New project**.
   - Select your organization (e.g., `sayed8901’s Org`).
   - Provide a relevant project name (e.g., `hr_corp-db`).
@@ -295,7 +299,7 @@ DATABASES = {
 
 3. **Update the .env file:**
 
-- In your .env file, replace/update the values for `DB_NAME`, `DB_USER`, `DB_HOST`, and `DB_PORT` based on your Supabase database configuration.
+- In your .env file, replace/update the values for `DB_NAME`, `DB_USER`, `DB_HOST`, and `DB_PORT` based on your Superbase database configuration.
 - You should also set `DB_PASSWORD` with the password you generated earlier.
 
 ```python
@@ -306,9 +310,9 @@ DB_HOST=your_db_host
 DB_PORT=your_db_port
 ```
 
-**To find the required database connection details in Supabase:**
+**To find the required database connection details in Superbase:**
 
-- Go to the `Supabase dashboard` and select your project.
+- Go to the `Superbase dashboard` and select your project.
 - Choose the `database` option from the left sidebar.
 - Alternatively, you can select the `connect` button from the top-right corner.
 - Select the `Python` tab from the `Connection string`
@@ -361,25 +365,21 @@ To set up email notifications for your Django application, follow these steps:
   `POST` - `/standard_user/register/`  
   Allows creating a new Standard User account.
 
-- **Login**:  
+- **Admin Login**:  
+  `POST` - `/admin/login/`  
+  Allows the admin to log in.
+
+- **User Login**:  
   `POST` - `/accounts/login/`  
   Authenticates a user and generates a session token.
 
-- **Logout**:  
+- **User Logout**:  
   `GET` - `/accounts/logout/`  
   Logs out the currently authenticated user.
 
 - **User Account Data by User ID**:  
   `GET` - `/accounts/user/?user_id=<id>`  
   Retrieves the account details of a user by their ID.
-
-- **Get Power User by User ID**:  
-  `GET` - `/power_user/by_user_id/?user_id=<id>`  
-  Retrieves a Power User's data by user ID.
-
-- **Get Standard User by User ID**:  
-  `GET` - `/standard_user/by_user_id/?user_id=<id>`  
-  Retrieves a Standard User's data by user ID.
 
 ### Power User Management
 
@@ -391,6 +391,10 @@ To set up email notifications for your Django application, follow these steps:
   `GET`/`PUT`/`PATCH`/`DELETE` - `/power_user/list/<id>/`  
   Allows retrieving, updating, or deleting a Power User by their ID.
 
+- **Get Power User by User ID**:  
+  `GET` - `/power_user/by_user_id/?user_id=<id>`  
+  Retrieves a Power User's data by user ID.
+
 ### Standard User Management
 
 - **List Standard Users**:  
@@ -400,6 +404,10 @@ To set up email notifications for your Django application, follow these steps:
 - **Update/Delete Standard User by ID**:  
   `GET`/`PUT`/`PATCH`/`DELETE` - `/standard_user/list/<id>/`  
   Allows retrieving, updating, or deleting a Standard User by their ID.
+
+- **Get Standard User by User ID**:  
+  `GET` - `/standard_user/by_user_id/?user_id=<id>`  
+  Retrieves a Standard User's data by user ID.
 
 ### Department Management (Power User Only)
 
