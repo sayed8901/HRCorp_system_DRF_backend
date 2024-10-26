@@ -174,8 +174,8 @@ whitenoise==6.7.0
 3. **Create a virtual environment**
 
    ```bash
-   python -m venv hrcorp_env
-   cd hrcorp_env
+   python -m venv hrcorp_venv
+   cd hrcorp_venv
    Scripts\activate.bat
    cd ..
    ```
@@ -250,13 +250,13 @@ python manage.py runserver
 12. **Finally, Access the application**
 
 - Local: http://127.0.0.1:8000/
-- Admin Panel: http://127.0.0.1:8000/admin/
+- Admin Panel: http://127.0.0.1:8000/admin/login/
 
 ---
 
 <br>
 
-## 13. Note for: Getting the `SECRET_KEY`
+## 13. Extra Note for: Getting the `SECRET_KEY`
 
 1. **to get the `SECRET_KEY`, Temporarily `Create a new project` named `temp_HRCorp` anywhere `outside the current project directory` (may be in the `desktop`, `documents` or `downloads`, wherever you want, just outside the current project directory)**
 
@@ -279,7 +279,7 @@ python manage.py runserver
 
 <br>
 
-## 14. Note for: Database Setup
+## 14. Extra Note for: Database Setup
 
 1. **Setting up in Supabase:**
 
@@ -332,7 +332,7 @@ DB_PORT=your_db_port
 
 <br>
 
-## 15. Note for: Email Setup
+## 15. Extra Note for: Email Setup
 
 To set up email notifications for your Django application, follow these steps:
 
@@ -362,6 +362,28 @@ To set up email notifications for your Django application, follow these steps:
 ---
 
 <br>
+
+## Getting Started
+
+To unlock and access the full functionality of this site and to perform some role-specific activities, you will need to create an account first. Follow the instructions below to get started.
+
+### Create an Account
+
+- To register as an **Power User**: Visit `/power_user/register/`.
+- To register as a **Standard User**: Visit `/standard_user/register/`.
+
+#### Steps to Register:
+
+1. Fill out the registration form with the relevant information and click the **POST** button.
+2. A confirmation link will be automatically sent to your email. Please check your inbox.
+3. Verify your account by clicking on the confirmation link provided in the email.
+4. After verification, return to the project site and navigate to `/accounts/login/` to log in with your credentials.
+
+### Role-Based Activities
+
+Once logged in, you can perform activities specific to your role. For a full list of available actions, you can check out the **`API Endpoints`** section below.
+
+---
 
 ## API Endpoints
 
