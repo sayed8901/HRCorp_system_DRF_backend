@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, status
+from django.http import HttpResponseRedirect
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -106,10 +107,16 @@ def activate(request, user_id, token):
         user.is_superuser = True
         user.is_active = True
         user.save()
-        return redirect('user_login')
+        # return redirect('user_login')
+
+        # redirected to live frontend login url
+        return HttpResponseRedirect('https://hrcorp.netlify.app/login')
     else:
         # er age response ba kono error message die deowa jete pare
-        return redirect('power_user_register')
+        # return redirect('power_user_register')
+
+        # redirected to live frontend register url
+        return HttpResponseRedirect('https://hrcorp.netlify.app/power_user_register')
 
 
 
