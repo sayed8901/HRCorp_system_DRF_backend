@@ -18,8 +18,20 @@ class PersonalInfoSerializer(serializers.ModelSerializer):
 class EmploymentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmploymentInfo
-        fields = '__all__'
+        fields = [
+            'employee', 
+            'status', 
+            'job_location', 
+            'department', 
+            'designation', 
+            'joining_date', 
+            'probation_period_months', 
+            'tentative_confirmation_date',
+            'confirmation_effective_date', 
+            'is_confirmed',
+        ]
 
+        # fields = '__all__'
         read_only_fields = ['employee']
 
     # to display names for job_location, department, and designation instead of just id only
