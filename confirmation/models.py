@@ -9,6 +9,7 @@ class ConfirmationInfo(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, to_field='employee_id')
 
     confirmed_designation = models.ForeignKey(Designation, on_delete=models.SET_NULL, null=True)
+    
     confirmed_grade = models.PositiveSmallIntegerField(choices=SALARY_GRADE_CHOICES)
     confirmed_step = models.PositiveSmallIntegerField(choices=SALARY_STEP_CHOICES)
 

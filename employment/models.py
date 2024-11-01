@@ -51,7 +51,7 @@ class Department(models.Model):
             self.slug = slugify(self.name)
         else:
             # Object already exists, check if the name has changed to update the slug
-            existing = Department.objects.get(pk=self.pk)
+            existing = Department.objects.get(pk = self.pk)
             if existing.name != self.name:
                 self.slug = slugify(self.name)
         
@@ -77,7 +77,7 @@ class Designation(models.Model):
             self.slug = slugify(self.name)
         else:
             # Object already exists, check if the name has changed to update the slug
-            existing = Designation.objects.get(pk=self.pk)
+            existing = Designation.objects.get(pk = self.pk)
             if existing.name != self.name:
                 self.slug = slugify(self.name)
 
@@ -103,7 +103,7 @@ class JobLocation(models.Model):
             self.slug = slugify(self.name)
         else:
             # Object already exists, check if the name has changed to update the slug
-            existing = JobLocation.objects.get(pk=self.pk)
+            existing = JobLocation.objects.get(pk = self.pk)
             if existing.name != self.name:
                 self.slug = slugify(self.name)
 

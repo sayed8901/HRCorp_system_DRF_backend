@@ -45,13 +45,13 @@ class ConfirmationInfoCreateView(APIView):
         employee_id = request.query_params.get('employee_id')
 
         if not employee_id:
-            return Response({"error": "Employee ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Employee ID is required."}, status = status.HTTP_400_BAD_REQUEST)
         
         # Fetch the employee instance from the employee_id
         try:
             employee = Employee.objects.get(employee_id = employee_id)
         except Employee.DoesNotExist:
-            return Response({'error': 'Employee not found, may be incorrect employee ID given'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Employee not found, may be incorrect employee ID given'}, status = status.HTTP_404_NOT_FOUND)
 
 
          # Fetch EmploymentInfo and SalaryInfo related to the employee
@@ -59,7 +59,7 @@ class ConfirmationInfoCreateView(APIView):
             employment_info = EmploymentInfo.objects.get(employee = employee)
             salary_info = SalaryInfo.objects.get(employee = employee)
         except EmploymentInfo.DoesNotExist:
-            return Response({'error': 'Employment info not found for this employee.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Employment info not found for this employee.'}, status = status.HTTP_404_NOT_FOUND)
         except SalaryInfo.DoesNotExist:
             return Response({'error': 'Salary info not found for this employee.'}, status=status.HTTP_404_NOT_FOUND)
 

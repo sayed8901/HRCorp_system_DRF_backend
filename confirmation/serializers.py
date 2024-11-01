@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from .models import ConfirmationInfo
 
+
 class ConfirmationInfoSerializer(serializers.ModelSerializer):
-    confirmed_designation = serializers.StringRelatedField()
+    
+    # confirmed_designation = serializers.StringRelatedField()
     
     class Meta:
         model = ConfirmationInfo
